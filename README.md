@@ -31,7 +31,7 @@ Aplicación web interactiva desarrollada con Vue 3 que permite aprender sobre Co
 1. Clonar el repositorio:
 
 ```bash
-git clone https://github.com/johannfonseca1/Pura-Vida-Quiz.git
+git clone https://github.com/johannfonseca/Pura-Vida-Quiz.git
 ```
 
 2. Entrar al proyecto:

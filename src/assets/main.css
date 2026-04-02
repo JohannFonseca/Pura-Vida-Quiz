@@ -1,6 +1,17 @@
 /* ============================================
-   Pura Vida Quiz — Estilos base
+   Pura Vida Quiz — Estilos Globales
    ============================================ */
+
+:root {
+  --bg-color: #fafaf9;      /* Blanco cálido, parecido a arena/papel */
+  --bg-nav: rgba(255, 255, 255, 0.85); /* Navbar blanco semi-transparente */
+  --text-main: #2c3e50;     /* Texto gris oscuro/azulado suave */
+  --text-muted: #5c6e7a;    /* Texto más claro para subtítulos/hover */
+  --accent-green-light: #86efac; /* Verde hoja claro */
+  --accent-green: #22c55e;  /* Verde vibrante natural */
+  --accent-green-dark: #16a34a; /* Verde bosque */
+  --border-color: #e5e7eb;
+}
 
 * {
   margin: 0;
@@ -9,7 +20,24 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #f9f9f9;
-  color: #2c3e50;
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar moderno claro */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
