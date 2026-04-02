@@ -1,8 +1,4 @@
 <script setup>
-/**
- * App.vue
- * Prompt 1: Pantalla base de Pura Vida Quiz
- */
 </script>
 
 <template>
@@ -18,8 +14,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   gap: 0.5rem;
+  margin: 4rem 0;
 }
 
 h1 {
