@@ -1,4 +1,16 @@
 <script setup>
+import { ref } from 'vue';
+
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const closeMenu = () => {
+  isMenuOpen.value = false;
+};
+
 /**
  * App.vue
  * Pura Vida Quiz - aca se ve la pagina principal
@@ -10,18 +22,22 @@
     <nav class="navbar">
       <div class="nav-content">
         <div class="brand">Pura Vida Quiz 🇨🇷</div>
-        <div class="nav-links">
-          <router-link to="/" class="nav-btn" active-class="active">Inicio</router-link>
-          <router-link to="/jugar" class="nav-btn" active-class="active">Jugar</router-link>
-          <router-link to="/ranking" class="nav-btn" active-class="active">Ranking</router-link>
-          <router-link to="/acerca-de" class="nav-btn" active-class="active">Acerca de</router-link>
+        <div class="nav-links" :class="{ 'open': isMenuOpen }">
+          <router-link to="/" class="nav-btn" active-class="active" @click="closeMenu">Inicio</router-link>
+          <router-link to="/jugar" class="nav-btn" active-class="active" @click="closeMenu">Jugar</router-link>
+          <router-link to="/ranking" class="nav-btn" active-class="active" @click="closeMenu">Ranking</router-link>
+          <router-link to="/acerca-de" class="nav-btn" active-class="active" @click="closeMenu">Acerca de</router-link>
         </div>
         <!-- Boton del menu -->
-        <button class="mobile-menu-btn" aria-label="Abrir menú">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <button class="mobile-menu-btn" aria-label="Abrir menú" @click="toggleMenu">
+          <svg v-if="!isMenuOpen" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <svg v-else viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
@@ -171,6 +187,21 @@
 @media (max-width: 768px) {
   .nav-links {
     display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-nav);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+  
+  .nav-links.open {
+    display: flex;
   }
   
   .mobile-menu-btn {
