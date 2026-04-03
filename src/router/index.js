@@ -2,13 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Proximamente from '../views/Proximamente.vue'
 
+// Aquí definimos todas las "páginas" (rutas) de nuestra aplicación
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView
+      path: '/',            // Cuando alguien entre a la raíz ('/')
+      name: 'home',         
+      component: HomeView   // Mostramos el componente HomeView
     },
     {
       path: '/jugar',
@@ -18,7 +19,7 @@ const router = createRouter({
     {
       path: '/ranking',
       name: 'ranking',
-      component: Proximamente
+      component: () => import('../views/RankingView.vue')
     },
     {
       path: '/acerca-de',

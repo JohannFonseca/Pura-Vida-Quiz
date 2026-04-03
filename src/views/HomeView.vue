@@ -2,6 +2,8 @@
   <div class="hero">
     <h1 class="title">¡Descubre <span class="highlight">Costa Rica!</span></h1>
     <p class="subtitle">Pon a prueba tu conocimiento sobre nuestra cultura, historia y biodiversidad en este divertido juego interactivo.</p>
+    
+    <!-- router-link es como la etiqueta <a> pero sin recargar la página, nos lleva directo a /jugar -->
     <router-link to="/jugar" style="text-decoration: none;">
       <button class="cta-button">Empezar a Jugar</button>
     </router-link>
