@@ -13,7 +13,8 @@ const closeMenu = () => {
 
 /**
  * App.vue
- * Pura Vida Quiz - aca se ve la pagina principal
+ * Pura Vida Quiz - Este es el componente principal que envuelve toda la app
+ * Acá puse el navbar para que no tenga que copiarlo en cada página
  */
 </script>
 
@@ -21,7 +22,8 @@ const closeMenu = () => {
   <div class="app-container">
     <nav class="navbar">
       <div class="nav-content">
-        <div class="brand">Pura Vida Quiz 🇨🇷</div>
+        <!-- Al tocar el logo o nombre, nos lleva al inicio (Home). Le puse un @click porque es más fácil -->
+        <div class="brand" @click="$router.push('/')" title="Volver al inicio">Pura Vida Quiz 🇨🇷</div>
         <div class="nav-links" :class="{ 'open': isMenuOpen }">
           <router-link to="/" class="nav-btn" active-class="active" @click="closeMenu">Inicio</router-link>
           <router-link to="/jugar" class="nav-btn" active-class="active" @click="closeMenu">Jugar</router-link>
@@ -44,9 +46,11 @@ const closeMenu = () => {
     </nav>
 
     <main class="main-content">
+      <!-- Aquí es donde vue-router inyecta las páginas (Home, Jugar, Ranking...) -->
       <router-view />
     </main>
 
+    <!-- Mi footer sencillo para que sepan que yo lo hice haha -->
     <footer class="footer">
       <div class="footer-content">
         <p>Creado por Johann Fonseca</p>

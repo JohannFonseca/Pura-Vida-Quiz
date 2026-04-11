@@ -14,7 +14,7 @@ const router = createRouter({
     {
       path: '/jugar',
       name: 'jugar',
-      component: Proximamente
+      component: () => import('../views/JugarView.vue')
     },
     {
       path: '/ranking',
