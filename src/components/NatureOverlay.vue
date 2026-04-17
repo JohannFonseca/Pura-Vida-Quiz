@@ -42,7 +42,7 @@
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   pointer-events: none; /* IMPORTANTÍSIMO: Permite cliquear lo de atrás */
-  z-index: 900; /* Flota encima de casi todo menos modales */
+  z-index: 5; /* Ahora está por debajo del contenido principal */
   overflow: hidden;
 }
 

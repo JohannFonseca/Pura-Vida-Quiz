@@ -60,9 +60,10 @@ const closeMenu = () => {
     <main class="main-content">
       <!-- Aquí es donde VueRouter inyecta la página que corresponda (Home, Jugar, etc.) -->
       <!-- Le metemos una transición básica para que se vea más fluido -->
+      <!-- router-view mejorado con :key para forzar re-renderizado -->
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
+        <transition name="fade">
+          <component :is="Component" :key="$route.path" />
         </transition>
       </router-view>
     </main>
@@ -185,6 +186,8 @@ const closeMenu = () => {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 10; /* Asegura estar por encima del overlay decorativo */
 }
 
 /* FOOTER */
