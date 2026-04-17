@@ -1,37 +1,44 @@
 <script setup>
-// Aquí importo ref desde vue para poder tener variables reactivas (que se actualizan solas en pantalla)
+/**
+ * JugarView.vue
+ * 
+ * Esta es la página de selección de juegos. 
+ * Usamos un arreglo de objetos para que sea "Data-Driven" (basado en datos),
+ * lo cual es una excelente práctica de Clean Code.
+ */
 import { ref } from 'vue';
 
-// Hice un arreglo (array) con todos los juegos para no tener que copiar y pegar HTML a cada rato.
-// Así solo uso un v-for más abajo y todo queda más limpio (clean code bro!).
+// Lista de juegos disponibles. 
+// Si mañana querés añadir un juego nuevo, solo lo metés en esta lista y listo,
+// no tenés que tocar el HTML (template).
 const juegos = ref([
   {
     id: 'sobrevive',
     nombre: 'Sobrevive en Costa Rica',
     descripcion: 'Toma decisiones y sobrevive en la selva tica.',
-    imagen: '/imagenes/sobrevive_costa_rica.png', // Las metí aquí para ser ordenado
-    ruta: '/proximamente'
+    imagen: '/imagenes/sobrevive_costa_rica.png',
+    ruta: '/jugar/sobrevive'
   },
   {
     id: 'donde-estoy',
     nombre: '¿Dónde estoy?',
     descripcion: 'Adivina el lugar viendo fotos de Costa Rica.',
     imagen: '/imagenes/donde_estoy.png',
-    ruta: '/proximamente'
+    ruta: '/jugar/donde-estoy'
   },
   {
     id: 'habla-tico',
     nombre: 'Habla como tico',
-    descripcion: 'Aprende las frases y dichos populares.',
+    descripcion: 'Demuestra si entiendes la verdadera calle de Costa Rica.',
     imagen: '/imagenes/habla_como_tico.png',
-    ruta: '/proximamente'
+    ruta: '/jugar/habla-tico'
   },
   {
     id: 'verdadero-falso',
     nombre: 'Verdadero o falso',
     descripcion: 'Mitos y verdades de nuestro país.',
     imagen: '/imagenes/verdadero_falso.png',
-    ruta: '/proximamente'
+    ruta: '/jugar/verdadero-falso'
   },
   {
     id: 'planifica-viaje',
@@ -46,13 +53,12 @@ const juegos = ref([
 
 <template>
   <div class="jugar-container">
-    <!-- El título de la sección Jugar -->
     <h1 class="title">Modos de <span class="highlight">Juego</span></h1>
     <p class="subtitle">Elige cómo quieres explorar y aprender sobre Costa Rica</p>
 
-    <!-- Esta clase la uso para mostrar todo en modo grid (cuadritos) dependiendo del dispositivo -->
     <div class="grid-juegos">
-      <!-- El v-for mágico que me autogenera todas las tarjetas a partir de la variable juegos -->
+      <!-- v-for: Es la forma en que Vue hace "bucles" para repetir elementos.
+           Iteramos sobre el arreglo 'juegos' y creamos una tarjeta para cada uno. -->
       <div v-for="juego in juegos" :key="juego.id" class="card-juego" @click="$router.push(juego.ruta)">
         <div class="card-img-container">
           <img :src="juego.imagen" :alt="juego.nombre" class="card-img">
@@ -109,22 +115,22 @@ const juegos = ref([
   margin-bottom: 3rem;
 }
 
-/* Grid de Tarjetas */
+/* GRID: Organiza las tarjetas de forma automática */
 .grid-juegos {
   display: grid;
+  /* 'auto-fit' hace que el grid se ajuste al ancho disponible */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   justify-items: center;
 }
 
-/* En escritorio 3 o 4 (aquí forzamos el grid a 3 columnas en desktop grande para mejorar layout si hay 5 items) */
 @media (min-width: 1024px) {
   .grid-juegos {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Tarjeta individual */
+/* TARJETA INDIVIDUAL */
 .card-juego {
   background: #ffffff;
   border-radius: 20px;
@@ -137,12 +143,12 @@ const juegos = ref([
   width: 100%;
   max-width: 350px;
   border: 1px solid var(--border-color);
-  position: relative;
 }
 
+/* Efecto visual al pasar el mouse por encima */
 .card-juego:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(34, 197, 94, 0.15); /* Sombra verde sutil */
+  box-shadow: 0 15px 30px rgba(34, 197, 94, 0.15);
   border-color: var(--accent-green-light);
 }
 
@@ -161,7 +167,7 @@ const juegos = ref([
 }
 
 .card-juego:hover .card-img {
-  transform: scale(1.05);
+  transform: scale(1.05); /* Efecto de zoom suave */
 }
 
 .card-content {
@@ -185,7 +191,7 @@ const juegos = ref([
   line-height: 1.5;
 }
 
-/* Responsive */
+/* AJUSTES RESPONSIVOS */
 @media (max-width: 768px) {
   .grid-juegos {
     grid-template-columns: repeat(2, 1fr);

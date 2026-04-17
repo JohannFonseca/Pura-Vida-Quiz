@@ -1,19 +1,35 @@
 <script setup>
-// importamos lo necesario de Vue
+/**
+ * RankingView.vue
+ * 
+ * Esta es la tabla de líderes. Aquí mostramos quiénes son los mejores jugadores
+ * consultando los datos desde Supabase (nuestra base de datos en la nube).
+ */
+
 import { ref, onMounted } from 'vue'
-// importamos nuestra función de ranking
+// Importamos el servicio que se encarga de hablar con la base de datos
 import { obtenerRanking } from '../services/ranking'
 
-// ref() crea una variable que cuando cambia, vue actualiza la pantalla automáticamente
-const topJugadores = ref([]) // Inicia vacío
-const cargando = ref(true)   // Inicia como "estoy cargando"
+// -- VARIABLES REACTIVAS --
+// 'ref' crea una variable que, al cambiar, avisa a Vue para redibujar la pantalla.
+const topJugadores = ref([]) // Lista de los mejores 10
+const cargando = ref(true)   // Estado para mostrar un mensaje de "espere"
 
-// onMounted se ejecuta apenas la página se abre
+/**
+ * lifecycle hook: onMounted
+ * Se ejecuta automáticamente cuando el componente ya está en pantalla.
+ * Es el lugar ideal para cargar datos de una API o Base de Datos.
+ */
 onMounted(async () => {
-  // Pedimos los datos y los guardamos
-  topJugadores.value = await obtenerRanking()
-  // Terminamos de cargar
-  cargando.value = false
+  try {
+    // Llamamos a la función asíncrona (async) y esperamos (await) el resultado
+    topJugadores.value = await obtenerRanking()
+  } catch (error) {
+    console.error('Error cargando el ranking:', error)
+  } finally {
+    // Pase lo que pase, dejamos de mostrar el estado de carga
+    cargando.value = false
+  }
 })
 </script>
 
@@ -21,17 +37,25 @@ onMounted(async () => {
   <div class="ranking-container">
     <h1 class="title">Top <span class="highlight">Jugadores</span></h1>
     
+    <!-- Renderizado condicional: Mostramos esto SOLO si 'cargando' es true -->
     <div v-if="cargando" class="loading">
-      Cargando ranking...
+      <div class="spinner"></div>
+      <p>Consultando a los expertos...</p>
     </div>
     
+    <!-- Si no está cargando y la lista está vacía -->
     <div v-else-if="topJugadores.length === 0" class="empty">
-      Aún no hay puntuaciones. ¡Sé el primero en jugar!
+      <p>Aún no hay puntuaciones registradas.</p>
+      <router-link to="/jugar">¡Sé el primero en jugar!</router-link>
     </div>
 
+    <!-- Si ya tenemos los datos, los mostramos en una lista -->
     <div v-else class="leaderboard">
       <div v-for="(jugador, index) in topJugadores" :key="jugador.id" class="jugador-row">
-        <div class="posicion" :class="{ 'top-3': index < 3 }">#{{ index + 1 }}</div>
+        <!-- 'index' nos da la posición (0, 1, 2...). Le sumamos 1 para el ranking real. -->
+        <div class="posicion" :class="{ 'top-3': index < 3 }">
+          {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '#' + (index + 1) }}
+        </div>
         <div class="nombre">{{ jugador.usuario }}</div>
         <div class="puntuacion">{{ jugador.puntuacion }} pts</div>
       </div>
@@ -43,10 +67,11 @@ onMounted(async () => {
 .ranking-container {
   max-width: 600px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 2.5rem;
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
 }
 
 .title {
@@ -80,49 +105,74 @@ onMounted(async () => {
 .leaderboard {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .jugador-row {
   display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   background: #f8fafc;
-  border-radius: 12px;
-  transition: transform 0.2s;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .jugador-row:hover {
-  transform: translateX(5px);
-  background: #f1f5f9;
+  transform: scale(1.02);
+  background: #ffffff;
+  border-color: var(--accent-green-light);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.03);
 }
 
 .posicion {
-  font-weight: bold;
+  font-weight: 800;
   font-size: 1.2rem;
   color: #94a3b8;
-  width: 50px;
+  width: 60px;
+  text-align: center;
 }
 
 .posicion.top-3 {
-  color: var(--accent-green);
+  color: var(--accent-green-dark);
+  font-size: 1.4rem;
 }
 
 .nombre {
   flex: 1;
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #334155;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .puntuacion {
   font-weight: 800;
   color: var(--accent-green-dark);
+  background: var(--accent-green-light);
+  padding: 0.4rem 0.8rem;
+  border-radius: 99px;
+  font-size: 0.95rem;
+  opacity: 0.9;
 }
 
+/* Efectos de carga */
 .loading, .empty {
   text-align: center;
   color: #64748b;
-  padding: 2rem;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(34, 197, 94, 0.1);
+  border-top-color: var(--accent-green);
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

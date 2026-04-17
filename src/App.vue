@@ -1,6 +1,14 @@
 <script setup>
+/**
+ * App.vue
+ * 
+ * Este es el "Esqueleto" global de nuestra aplicación. 
+ * Todo lo que pongas aquí (como el Navbar o el Footer) se verá en todas las páginas.
+ */
 import { ref } from 'vue';
+import NatureOverlay from './components/NatureOverlay.vue';
 
+// 'isMenuOpen' controla si el menú de hamburguesa está abierto o cerrado en móviles.
 const isMenuOpen = ref(false);
 
 const toggleMenu = () => {
@@ -10,27 +18,30 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false;
 };
-
-/**
- * App.vue
- * Pura Vida Quiz - Este es el componente principal que envuelve toda la app
- * Acá puse el navbar para que no tenga que copiarlo en cada página
- */
 </script>
 
 <template>
   <div class="app-container">
+    <!-- El Overlay es un efecto visual bonito que está siempre de fondo -->
+    <NatureOverlay />
+
+    <!-- NAVBAR: La barra de navegación superior -->
     <nav class="navbar">
       <div class="nav-content">
-        <!-- Al tocar el logo o nombre, nos lleva al inicio (Home). Le puse un @click porque es más fácil -->
-        <div class="brand" @click="$router.push('/')" title="Volver al inicio">Pura Vida Quiz 🇨🇷</div>
+        <!-- Logo de la app. Usamos $router.push para navegar programáticamente -->
+        <div class="brand" @click="$router.push('/')" title="Volver al inicio">
+          Pura Vida Quiz 🇨🇷
+        </div>
+
+        <!-- Links de navegación con 'router-link' -->
         <div class="nav-links" :class="{ 'open': isMenuOpen }">
           <router-link to="/" class="nav-btn" active-class="active" @click="closeMenu">Inicio</router-link>
           <router-link to="/jugar" class="nav-btn" active-class="active" @click="closeMenu">Jugar</router-link>
           <router-link to="/ranking" class="nav-btn" active-class="active" @click="closeMenu">Ranking</router-link>
           <router-link to="/acerca-de" class="nav-btn" active-class="active" @click="closeMenu">Acerca de</router-link>
         </div>
-        <!-- Boton del menu -->
+
+        <!-- Botón para móviles (hamburguesa) -->
         <button class="mobile-menu-btn" aria-label="Abrir menú" @click="toggleMenu">
           <svg v-if="!isMenuOpen" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -45,33 +56,44 @@ const closeMenu = () => {
       </div>
     </nav>
 
+    <!-- EL CONTENIDO DINÁMICO -->
     <main class="main-content">
-      <!-- Aquí es donde vue-router inyecta las páginas (Home, Jugar, Ranking...) -->
-      <router-view />
+      <!-- Aquí es donde VueRouter inyecta la página que corresponda (Home, Jugar, etc.) -->
+      <!-- Le metemos una transición básica para que se vea más fluido -->
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
 
-    <!-- Mi footer sencillo para que sepan que yo lo hice haha -->
+    <!-- FOOTER simple -->
     <footer class="footer">
       <div class="footer-content">
-        <p>Creado por Johann Fonseca</p>
+        <p>Creado con ❤️ por Johann Fonseca</p>
       </div>
     </footer>
   </div>
 </template>
 
 <style scoped>
-/* ============================================
-   Layout Principal
-   ============================================ */
+/* Transición entre páginas */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* ============================================
-   Navbar
-   ============================================ */
+/* NAVBAR */
 .navbar {
   position: fixed;
   top: 0;
@@ -126,7 +148,7 @@ const closeMenu = () => {
 
 .nav-btn:hover {
   color: var(--accent-green-dark);
-  background-color: rgba(34, 197, 94, 0.1); /* Fondo verde */
+  background-color: rgba(34, 197, 94, 0.1);
 }
 
 .nav-btn.active {
@@ -152,42 +174,36 @@ const closeMenu = () => {
   cursor: pointer;
 }
 
-/* ============================================
-   Contenido Principal
-   ============================================ */
+/* CONTENIDO */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 80px; /* Compensa el navbar fijo */
-  padding: 2rem;
+  margin-top: 80px; /* Espacio para que el navbar no tape nada */
+  padding: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-
-
-/* ============================================
-   Footer
-   ============================================ */
+/* FOOTER */
 .footer {
-  background-color: #ffffff;
-  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-color);
   padding: 1.5rem;
   text-align: center;
   margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  z-index: 10;
 }
 
 .footer-content p {
   color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-/* ============================================
-   Responsive (Mobile)
-   ============================================ */
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .nav-links {
     display: none;
@@ -212,4 +228,5 @@ const closeMenu = () => {
     display: block;
   }
 }
+</style>
 </style>
