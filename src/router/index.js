@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AcercaDeView from '../views/AcercaDeView.vue'
 import Proximamente from '../views/Proximamente.vue'
+import JugarView from '../views/JugarView.vue'
 
 /**
  * router/index.js
@@ -23,9 +24,7 @@ const router = createRouter({
     {
       path: '/jugar',
       name: 'jugar',
-      // Esto es "Lazy Loading": el código de JugarView solo se descarga cuando el usuario entra ahí.
-      // ¡Es genial para que la app inicial cargue más rápido!
-      component: () => import('../views/JugarView.vue')
+      component: JugarView
     },
     {
       path: '/jugar/sobrevive',
