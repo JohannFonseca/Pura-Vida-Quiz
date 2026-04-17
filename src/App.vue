@@ -6,7 +6,7 @@
  * Todo lo que pongas aquí (como el Navbar o el Footer) se verá en todas las páginas.
  */
 import { ref } from 'vue';
-// import NatureOverlay from './components/NatureOverlay.vue';
+import NatureOverlay from './components/NatureOverlay.vue';
 
 // 'isMenuOpen' controla si el menú de hamburguesa está abierto o cerrado en móviles.
 const isMenuOpen = ref(false);
@@ -22,8 +22,8 @@ const closeMenu = () => {
 
 <template>
   <div class="app-container">
-    <!-- El Overlay desactivado temporalmente -->
-    <!-- <NatureOverlay /> -->
+    <!-- El Overlay es un efecto visual bonito que está siempre de fondo -->
+    <NatureOverlay />
 
     <!-- NAVBAR: La barra de navegación superior -->
     <nav class="navbar">
@@ -58,18 +58,19 @@ const closeMenu = () => {
 
     <!-- EL CONTENIDO DINÁMICO -->
     <main class="main-content">
-      <div style="background: red; color: white; padding: 5px; text-align: center; font-weight: bold;">
-        DEBUG: El contenedor principal está cargado
-      </div>
-      
-      <!-- router-view sin transiciones para diagnóstico -->
-      <router-view />
+      <!-- Aquí es donde VueRouter inyecta la página que corresponda (Home, Jugar, etc.) -->
+      <!-- Le metemos una transición básica para que se vea más fluido -->
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
 
     <!-- FOOTER simple -->
     <footer class="footer">
       <div class="footer-content">
-        <p>Creado con ❤️ por Johann Fonseca</p>
+        <p>Creado por Johann Fonseca</p>
       </div>
     </footer>
   </div>
