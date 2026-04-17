@@ -229,4 +229,3 @@ const closeMenu = () => {
   }
 }
 </style>
-</style>

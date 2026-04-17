@@ -92,7 +92,7 @@ const selectAnswer = (decision) => {
   if (gameState.value !== 'jugando') return
   clearInterval(timerInterval)
   
-  const esCorrecta = (decision === currentQuestion.value.respuesta)
+  const esCorrecta = (decision === currentQuestion.value.esVerdadero)
   choiceMade.value = { timeout: false, boolChoice: decision, isCorrect: esCorrecta }
   
   if (esCorrecta) {
@@ -188,11 +188,11 @@ onUnmounted(() => clearInterval(timerInterval))
 
         <!-- IMAGEN DEL MITO -->
         <div class="feature-image">
-          <img :src="currentQuestion.image || currentQuestion.imagen" alt="Imagen del reto" />
+          <img :src="currentQuestion.imagen" alt="Imagen del reto" />
         </div>
 
         <div class="question-zone">
-          <h2 class="hypothesis">{{ currentQuestion.texto }}</h2>
+          <h2 class="hypothesis">{{ currentQuestion.mito }}</h2>
         </div>
 
         <!-- BOTONES DE VERDADERO / FALSO -->
@@ -211,7 +211,7 @@ onUnmounted(() => clearInterval(timerInterval))
           <h2 v-else-if="choiceMade?.isCorrect" class="fb-good">¡CORRECTO! 🎯</h2>
           <h2 v-else class="fb-bad">¡INCORRECTO! 💥</h2>
 
-          <p class="fb-expl"><strong>{{ currentQuestion.respuesta ? 'El dato es Real:' : 'Era puro Mito:' }}</strong> {{ currentQuestion.curiosidad }}</p>
+          <p class="fb-expl"><strong>{{ currentQuestion.esVerdadero ? 'El dato es Real:' : 'Era puro Mito:' }}</strong> {{ currentQuestion.explicacion }}</p>
         </div>
 
       </div>
@@ -237,8 +237,8 @@ onUnmounted(() => clearInterval(timerInterval))
         <div class="errors-list" v-if="logErrores.length > 0">
           <h4 class="err-title">Mitos donde tropezaste ({{logErrores.length}}):</h4>
           <div v-for="err in logErrores" :key="err.id" class="err-card">
-            <p><strong>{{ err.texto }}</strong></p>
-            <p class="err-reason">📍 <em>{{ err.curiosidad }}</em></p>
+            <p><strong>{{ err.mito }}</strong></p>
+            <p class="err-reason">📍 <em>{{ err.explicacion }}</em></p>
           </div>
         </div>
         
