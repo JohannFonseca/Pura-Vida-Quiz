@@ -39,13 +39,6 @@ const juegos = ref([
     descripcion: 'Mitos y verdades de nuestro país.',
     imagen: '/imagenes/verdadero_falso.png',
     ruta: '/jugar/verdadero-falso'
-  },
-  {
-    id: 'planifica-viaje',
-    nombre: 'Planifica tu viaje',
-    descripcion: 'Organiza el tour perfecto paso a paso.',
-    imagen: '/imagenes/planifica_viaje.png',
-    ruta: '/proximamente'
   }
 ]);
 

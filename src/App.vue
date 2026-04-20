@@ -38,6 +38,7 @@ const closeMenu = () => {
           <router-link to="/" class="nav-btn" active-class="active" @click="closeMenu">Inicio</router-link>
           <router-link to="/jugar" class="nav-btn" active-class="active" @click="closeMenu">Jugar</router-link>
           <router-link to="/ranking" class="nav-btn" active-class="active" @click="closeMenu">Ranking</router-link>
+          <router-link to="/planificador" class="nav-btn" active-class="active" @click="closeMenu">Planificar</router-link>
           <router-link to="/acerca-de" class="nav-btn" active-class="active" @click="closeMenu">Acerca de</router-link>
         </div>
 

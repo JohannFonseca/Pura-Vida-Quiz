@@ -57,6 +57,11 @@ const router = createRouter({
       component: AcercaDeView
     },
     {
+      path: '/planificador',
+      name: 'planificador',
+      component: () => import('../views/PlanificaTuViajeView.vue')
+    },
+    {
       path: '/proximamente',
       name: 'proximamente',
       component: Proximamente
