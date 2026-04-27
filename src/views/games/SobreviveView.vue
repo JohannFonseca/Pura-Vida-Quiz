@@ -9,6 +9,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 // Importamos las situaciones de supervivencia
 import { questions } from '../../data/sobrevive.js'
+import ScoreRegistration from '../../components/ScoreRegistration.vue'
 
 // --- ESTADO GLOBAL ---
 // inicio | jugando | validando | resultados
@@ -196,6 +197,11 @@ onUnmounted(() => {
         <p class="desc">{{ feedbackData.desc }}</p>
         <p class="stats">Acertaste {{ score }} de {{ questions.length }} situaciones.</p>
         
+        <!-- REGISTRO DE PUNTUACIÓN -->
+        <!-- Usamos el porcentaje o una escala de puntos. 
+             Vamos a darle 1000 puntos por cada acierto para que sea consistente con los otros juegos. -->
+        <ScoreRegistration :score="score * 1000" gameName="Sobrevive en CR" />
+
         <div class="action-buttons">
           <button @click="startGame" class="btn-primary">Sobrevivir de Nuevo</button>
           <button @click="$router.push('/jugar')" class="btn-secondary">Volver al Menú</button>

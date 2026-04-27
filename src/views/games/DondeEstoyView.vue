@@ -9,6 +9,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 // Importamos las preguntas desde nuestro nuevo archivo de datos
 import { questions } from '../../data/donde-estoy.js'
+import ScoreRegistration from '../../components/ScoreRegistration.vue'
 
 // --- ESTADO GLOBAL DEL JUEGO ---
 // 'gameState' controla qué pantalla ve el usuario: 'inicio', 'jugando', 'validando' o 'resultados'.
@@ -306,6 +307,9 @@ onUnmounted(() => clearInterval(timerInterval))
             📲 Compartir en WhatsApp
           </button>
         </div>
+
+        <!-- REGISTRO DE PUNTUACIÓN -->
+        <ScoreRegistration :score="userScore" gameName="¿Donde Estoy?" />
 
         <div class="nav-bottom">
           <button @click="startGame" class="btn-primary">Intentar de nuevo</button>

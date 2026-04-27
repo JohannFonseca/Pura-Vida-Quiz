@@ -9,6 +9,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 // Importamos las preguntas (frases) desde la base de datos local
 import { questions } from '../../data/habla-tico.js'
+import ScoreRegistration from '../../components/ScoreRegistration.vue'
 
 // --- ESTADO GLOBAL ---
 const gameState = ref('inicio') 
@@ -224,6 +225,9 @@ onUnmounted(() => clearInterval(timerInterval))
             📲 Compartir en WhatsApp
           </button>
         </div>
+
+        <!-- REGISTRO DE PUNTUACIÓN -->
+        <ScoreRegistration :score="userScore" gameName="Habla como Tico" />
 
         <!-- REVISIÓN DE ERRORES (Ideal para aprender) -->
         <div class="feedback-zone" v-if="errorLog.length > 0">
