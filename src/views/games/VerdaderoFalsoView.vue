@@ -9,6 +9,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 // Importamos las preguntas desde el archivo de datos
 import { questions } from '../../data/verdadero-falso.js'
+import { guardarPuntuacion } from '../../services/ranking'
 
 // --- ESTADO DEL JUEGO ---
 // inicio | jugando | validando | resultados
@@ -23,6 +24,13 @@ const userScore = ref(0)
 const correctCount = ref(0)
 const choiceMade = ref(null) // { boolChoice, timeout, isCorrect }
 const logErrores = ref([]) // Guardamos las preguntas fallidas para repasarlas al final
+
+// --- REGISTRO DE PUNTUACIÓN ---
+const playerName = ref('')
+const roomName = ref('')
+const scoreSaved = ref(false)
+const isSaving = ref(false)
+const saveError = ref(null)
 
 // 'currentQuestion' nos da la pregunta actual basada en el índice
 const currentQuestion = computed(() => questions[currentQIndex.value])
@@ -44,7 +52,36 @@ const startGame = () => {
   correctCount.value = 0
   choiceMade.value = null
   logErrores.value = []
+  scoreSaved.value = false
+  saveError.value = null
   startTimer()
+}
+
+/**
+ * Guarda el puntaje en la base de datos
+ */
+const handleSaveScore = async () => {
+  if (!playerName.value.trim()) return
+  
+  isSaving.value = true
+  saveError.value = null
+  
+  try {
+    const result = await guardarPuntuacion(
+      playerName.value, 
+      Math.round(userScore.value), 
+      roomName.value
+    )
+    if (result) {
+      scoreSaved.value = true
+    } else {
+      saveError.value = "No se pudo guardar. ¿Ya ejecutaste el SQL en Supabase?"
+    }
+  } catch (err) {
+    saveError.value = "Error de conexión"
+  } finally {
+    isSaving.value = false
+  }
 }
 
 /**
@@ -233,6 +270,23 @@ onUnmounted(() => clearInterval(timerInterval))
           </button>
         </div>
 
+        <!-- FORMULARIO DE REGISTRO -->
+        <div class="registration-box" v-if="!scoreSaved">
+          <h4>🏆 ¡Registra tu puntuación!</h4>
+          <div class="form-group">
+            <input v-model="playerName" placeholder="Tu Nombre / Apodo" class="input-field" />
+            <input v-model="roomName" placeholder="Nombre de la Sala (opcional)" class="input-field" />
+          </div>
+          <p v-if="saveError" class="error-msg">{{ saveError }}</p>
+          <button @click="handleSaveScore" :disabled="isSaving || !playerName" class="btn-save">
+            {{ isSaving ? 'Guardando...' : 'Guardar en el Ranking' }}
+          </button>
+        </div>
+        <div class="registration-success" v-else>
+          <p>✅ ¡Tu puntuación ha sido registrada!</p>
+          <button @click="$router.push('/ranking')" class="btn-view-ranking">Ver Tabla de Líderes</button>
+        </div>
+
         <!-- Listado de lo que fallaste para que aprendas -->
         <div class="errors-list" v-if="logErrores.length > 0">
           <h4 class="err-title">Mitos donde tropezaste ({{logErrores.length}}):</h4>
@@ -365,4 +419,56 @@ onUnmounted(() => clearInterval(timerInterval))
 .err-reason { color: #64748b; font-size: 0.95rem; margin-top: 0.2rem;}
 
 .nav-bottom { display: flex; flex-direction: column; gap: 0.8rem; }
+
+/* REGISTRO STYLES */
+.registration-box {
+  background: #f0f9ff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  border: 2px solid #bae6fd;
+}
+.registration-box h4 { margin-top: 0; color: #0369a1; margin-bottom: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
+.input-field {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+  outline: none;
+}
+.input-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.btn-save {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+.btn-save:hover:not(:disabled) { background: #0284c7; }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.registration-success {
+  background: #dcfce7;
+  padding: 1rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  color: #166534;
+  font-weight: 700;
+}
+.btn-view-ranking {
+  background: transparent;
+  color: #166534;
+  border: 2px solid #166534;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+.error-msg { color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold; }
 </style>

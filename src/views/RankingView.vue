@@ -31,6 +31,20 @@ onMounted(async () => {
     cargando.value = false
   }
 })
+
+/**
+ * Formatea la fecha de Supabase a algo legible
+ */
+const formatearFecha = (fechaIso) => {
+  if (!fechaIso) return ''
+  const date = new Date(fechaIso)
+  return date.toLocaleString('es-CR', { 
+    day: '2-digit', 
+    month: '2-digit', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
+}
 </script>
 
 <template>
@@ -56,7 +70,13 @@ onMounted(async () => {
         <div class="posicion" :class="{ 'top-3': index < 3 }">
           {{ index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '#' + (index + 1) }}
         </div>
-        <div class="nombre">{{ jugador.usuario }}</div>
+        <div class="info-jugador">
+          <div class="nombre">{{ jugador.usuario }}</div>
+          <div class="detalles-extra">
+            <span v-if="jugador.sala" class="sala-tag">📍 {{ jugador.sala }}</span>
+            <span class="fecha-tag">🕒 {{ formatearFecha(jugador.created_at) }}</span>
+          </div>
+        </div>
         <div class="puntuacion">{{ jugador.puntuacion }} pts</div>
       </div>
     </div>
@@ -139,10 +159,28 @@ onMounted(async () => {
 }
 
 .nombre {
-  flex: 1;
   font-size: 1.1rem;
   font-weight: 700;
   color: #1e293b;
+}
+
+.info-jugador {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.detalles-extra {
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.sala-tag {
+  color: #0ea5e9;
+  font-weight: 600;
 }
 
 .puntuacion {

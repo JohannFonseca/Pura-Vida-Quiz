@@ -33,13 +33,17 @@ export async function obtenerRanking() {
 // ==========================================
 // Función para guardar puntos cuando el usuario termina una partida
 // ==========================================
-export async function guardarPuntuacion(usuario, puntuacion) {
-  // .insert(): Metemos un nuevo registro con el nombre del usuario y su puntaje.
+export async function guardarPuntuacion(usuario, puntuacion, sala = '') {
+  // .insert(): Metemos un nuevo registro con el nombre del usuario, su puntaje y la sala.
   // Pasamos un objeto dentro de un arreglo [ { ... } ].
   const { data, error } = await supabase
     .from('ranking')
     .insert([
-      { usuario: usuario, puntuacion: puntuacion }
+      { 
+        usuario: usuario, 
+        puntuacion: puntuacion,
+        sala: sala 
+      }
     ])
 
   // Es importante revisar siempre si hubo error al guardar.
