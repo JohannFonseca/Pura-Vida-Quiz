@@ -6,7 +6,9 @@
  * Usamos un arreglo de objetos para que sea "Data-Driven" (basado en datos),
  * lo cual es una excelente práctica de Clean Code.
  */
-// Importamos useRouter para manejar la navegación desde el código si fuera necesario.
+// 'ref' nos permite crear variables reactivas — cuando cambian, Vue actualiza la pantalla automáticamente.
+// 'useRouter' nos da acceso al enrutador para navegar entre páginas desde el código.
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
