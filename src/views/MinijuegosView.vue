@@ -5,6 +5,9 @@
  * Sección dedicada a juegos de acción/arcade (Canvas, etc.)
  */
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const minijuegos = ref([
   {
@@ -22,6 +25,10 @@ const minijuegos = ref([
     ruta: '/minijuegos/pelea'
   }
 ]);
+
+const navigateToGame = (ruta) => {
+  router.push(ruta);
+};
 </script>
 
 <template>
@@ -30,11 +37,12 @@ const minijuegos = ref([
     <p class="subtitle">Diversión rápida y acción al estilo Pura Vida</p>
 
     <div class="grid-juegos">
-      <div
+      <router-link
         v-for="juego in minijuegos"
         :key="juego.id"
+        :to="juego.ruta"
         class="card-juego"
-        @click="$router.push(juego.ruta)"
+        style="text-decoration: none;"
       >
         <div class="card-img-container">
           <img v-if="juego.imagen" :src="juego.imagen" :alt="juego.nombre" class="card-img">
@@ -47,7 +55,7 @@ const minijuegos = ref([
           <p class="card-desc">{{ juego.descripcion }}</p>
           <div class="card-tag">Acción</div>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>

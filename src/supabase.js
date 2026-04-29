@@ -12,6 +12,16 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
-// 2. Inicializamos el cliente oficial de Supabase.
-// Esto crea la conexión que usaremos para guardar puntajes o leer el ranking.
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// 2. Inicializamos el cliente solo si tenemos las credenciales.
+// IMPORTANTE: Esto evita que la app "muera" (crash) si faltan las variables de entorno en Vercel.
+// Si no están, la app sigue funcionando pero las funciones de ranking se desactivan con un aviso.
+let supabaseInstance = null
+
+if (supabaseUrl && supabaseKey) {
+  supabaseInstance = createClient(supabaseUrl, supabaseKey)
+} else {
+  // Nota para mi mismo: Si sale este mensaje en Vercel, es que olvidé configurar las Env Variables.
+  console.warn('⚠️ Supabase URL o Key no encontradas. Las funciones de base de datos no estarán disponibles.')
+}
+
+export const supabase = supabaseInstance

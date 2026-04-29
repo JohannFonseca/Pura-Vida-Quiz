@@ -6,11 +6,13 @@
  * Usamos un arreglo de objetos para que sea "Data-Driven" (basado en datos),
  * lo cual es una excelente práctica de Clean Code.
  */
-import { ref } from 'vue';
+// Importamos useRouter para manejar la navegación desde el código si fuera necesario.
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // Lista de juegos disponibles. 
-// Si mañana querés añadir un juego nuevo, solo lo metés en esta lista y listo,
-// no tenés que tocar el HTML (template).
+// TIP: Si quiero añadir un juego nuevo, solo lo meto aquí y la interfaz se actualiza sola.
 const juegos = ref([
   {
     id: 'sobrevive',
@@ -42,6 +44,11 @@ const juegos = ref([
   }
 ]);
 
+// Función de navegación: La mantenemos por si ocupamos lógica extra antes de ir al juego.
+const navigateToGame = (ruta) => {
+  router.push(ruta);
+};
+
 </script>
 
 <template>
@@ -50,16 +57,18 @@ const juegos = ref([
     <p class="subtitle">Poné a prueba tu conocimiento sobre nuestra cultura y tradiciones</p>
 
     <div class="grid-juegos">
-      <!-- v-for: Es la forma en que Vue hace "bucles" para repetir elementos.
-           Iteramos sobre el arreglo 'juegos' y creamos una tarjeta para cada uno. -->
-      <div
+      <!-- Usamos router-link para las tarjetas: 
+           1. Es mejor para SEO y accesibilidad.
+           2. Funciona incluso si hay errores leves en otros scripts.
+           3. Muestra la URL al pasar el mouse. -->
+      <router-link
         v-for="juego in juegos"
         :key="juego.id"
+        :to="juego.ruta"
         class="card-juego"
-        @click="$router.push(juego.ruta)"
+        style="text-decoration: none;"
       >
         <div class="card-img-container">
-          <!-- Si el juego tiene imagen la mostramos; si no, usamos un placeholder con ícono -->
           <img v-if="juego.imagen" :src="juego.imagen" :alt="juego.nombre" class="card-img">
           <div v-else class="card-img-placeholder">
             <span class="placeholder-icon">🎮</span>
@@ -69,7 +78,7 @@ const juegos = ref([
           <h2 class="card-title">{{ juego.nombre }}</h2>
           <p class="card-desc">{{ juego.descripcion }}</p>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>

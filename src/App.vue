@@ -6,8 +6,10 @@
  * Todo lo que pongas aquí (como el Navbar o el Footer) se verá en todas las páginas.
  */
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import NatureOverlay from './components/NatureOverlay.vue';
 
+const router = useRouter();
 // 'isMenuOpen' controla si el menú de hamburguesa está abierto o cerrado en móviles.
 const isMenuOpen = ref(false);
 
@@ -17,6 +19,11 @@ const toggleMenu = () => {
 
 const closeMenu = () => {
   isMenuOpen.value = false;
+};
+
+const goToHome = () => {
+  router.push('/');
+  closeMenu();
 };
 </script>
 
@@ -28,8 +35,8 @@ const closeMenu = () => {
     <!-- NAVBAR: La barra de navegación superior -->
     <nav class="navbar">
       <div class="nav-content">
-        <!-- Logo de la app. Usamos $router.push para navegar programáticamente -->
-        <div class="brand" @click="$router.push('/')" title="Volver al inicio">
+        <!-- Logo de la app. Usamos router.push para navegar programáticamente -->
+        <div class="brand" @click="goToHome" title="Volver al inicio">
           Pura Vida Quiz 🇨🇷
         </div>
 

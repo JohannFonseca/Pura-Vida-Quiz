@@ -19,11 +19,23 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    // Redirección: Si por error entro a /jugar (ruta vieja), me manda a /quizzes automáticamente.
+    {
+      path: '/jugar',
+      redirect: '/quizzes'
+    },
+    // Lo mismo para el Runner, si entro por la ruta de antes, me lleva a la nueva.
+    {
+      path: '/jugar/beta',
+      redirect: '/minijuegos/runner'
+    },
+    // Esta es la nueva "casa" de los quizzes.
     {
       path: '/quizzes',
       name: 'quizzes',
       component: JugarView
     },
+    // Rutas individuales para cada quiz. Usamos 'import' dinámico para cargar solo lo que el usuario ocupa.
     {
       path: '/quizzes/sobrevive',
       name: 'sobrevive',

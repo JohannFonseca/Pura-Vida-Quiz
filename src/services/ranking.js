@@ -11,22 +11,23 @@ import { supabase } from '../supabase'
 // Función para descargar los puntajes del Top 10
 // ==========================================
 export async function obtenerRanking() {
-  // 1. Le pedimos a Supabase que traiga todo (*) de la tabla 'ranking'
-  // 2. .order('puntuacion', { ascending: false }): Lo ordena de la nota más alta a la más baja.
-  // 3. .limit(10): Solo queremos a los 10 mejores para no saturar la pantalla.
+  // Verificamos si Supabase está activo para evitar errores de "undefined"
+  if (!supabase) {
+    console.warn('Ranking no disponible: Supabase no está configurado (revisar variables de entorno).')
+    return []
+  }
+
   const { data, error } = await supabase
     .from('ranking')
     .select('*')
     .order('puntuacion', { ascending: false })
     .limit(10)
 
-  // Si algo falla (ej. el internet se cayó), avisamos en la consola para saber qué pasó.
   if (error) {
     console.error('Error al obtener el ranking:', error)
     return []
   }
   
-  // Si todo salió bien, devolvemos la lista de jugadores.
   return data
 }
 
@@ -34,8 +35,12 @@ export async function obtenerRanking() {
 // Función para guardar puntos cuando el usuario termina una partida
 // ==========================================
 export async function guardarPuntuacion(usuario, puntuacion, sala = '') {
-  // .insert(): Metemos un nuevo registro con el nombre del usuario, su puntaje y la sala.
-  // Pasamos un objeto dentro de un arreglo [ { ... } ].
+  // Misma validación de seguridad aquí
+  if (!supabase) {
+    console.warn('No se puede guardar la puntuación: Supabase no está configurado.')
+    return null
+  }
+
   const { data, error } = await supabase
     .from('ranking')
     .insert([
@@ -47,7 +52,6 @@ export async function guardarPuntuacion(usuario, puntuacion, sala = '') {
     ])
     .select()
 
-  // Es importante revisar siempre si hubo error al guardar.
   if (error) {
     console.error('Error al guardar la puntuación:', error)
     return null
