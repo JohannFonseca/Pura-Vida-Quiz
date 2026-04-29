@@ -12,44 +12,37 @@ import JugarView from '../views/JugarView.vue'
  */
 
 const router = createRouter({
-  // 'createWebHistory' hace que las URLs se vean limpias (ej: /jugar en vez de /#/jugar)
   history: createWebHistory(import.meta.env.BASE_URL),
-  
   routes: [
     {
-      path: '/',            // Cuando la ruta es la raíz (el inicio)
-      name: 'home',         
-      component: HomeView   // Cargamos el componente HomeView de inmediato
+      path: '/',
+      name: 'home',
+      component: HomeView
     },
     {
-      path: '/jugar',
-      name: 'jugar',
+      path: '/quizzes',
+      name: 'quizzes',
       component: JugarView
     },
     {
-      path: '/jugar/sobrevive',
+      path: '/quizzes/sobrevive',
       name: 'sobrevive',
       component: () => import('../views/games/SobreviveView.vue')
     },
     {
-      path: '/jugar/donde-estoy',
+      path: '/quizzes/donde-estoy',
       name: 'donde-estoy',
       component: () => import('../views/games/DondeEstoyView.vue')
     },
     {
-      path: '/jugar/habla-tico',
+      path: '/quizzes/habla-tico',
       name: 'habla-tico',
       component: () => import('../views/games/HablaTicoView.vue')
     },
     {
-      path: '/jugar/verdadero-falso',
+      path: '/quizzes/verdadero-falso',
       name: 'verdadero-falso',
       component: () => import('../views/games/VerdaderoFalsoView.vue')
-    },
-    {
-      path: '/jugar/beta',
-      name: 'beta',
-      component: () => import('../views/games/BetaScreen.vue')
     },
     {
       path: '/ranking',
@@ -70,6 +63,11 @@ const router = createRouter({
       path: '/minijuegos',
       name: 'minijuegos',
       component: () => import('../views/MinijuegosView.vue')
+    },
+    {
+      path: '/minijuegos/runner',
+      name: 'runner',
+      component: () => import('../views/games/BetaScreen.vue')
     },
     {
       path: '/minijuegos/pelea',

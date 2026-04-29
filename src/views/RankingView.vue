@@ -60,7 +60,7 @@ const formatearFecha = (fechaIso) => {
     <!-- Si no está cargando y la lista está vacía -->
     <div v-else-if="topJugadores.length === 0" class="empty">
       <p>Aún no hay puntuaciones registradas.</p>
-      <router-link to="/jugar">¡Sé el primero en jugar!</router-link>
+      <router-link to="/quizzes">¡Sé el primero en jugar!</router-link>
     </div>
 
     <!-- Si ya tenemos los datos, los mostramos en una lista -->

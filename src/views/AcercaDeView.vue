@@ -15,7 +15,7 @@ const router = useRouter();
  * Función para navegar a la pantalla de juegos.
  */
 const goPlay = () => {
-  router.push('/jugar');
+  router.push('/quizzes');
 };
 
 /**

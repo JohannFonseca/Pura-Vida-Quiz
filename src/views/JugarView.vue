@@ -17,28 +17,28 @@ const juegos = ref([
     nombre: 'Sobrevive en Costa Rica',
     descripcion: 'Toma decisiones y sobrevive en la selva tica.',
     imagen: '/imagenes/sobrevive_costa_rica.png',
-    ruta: '/jugar/sobrevive'
+    ruta: '/quizzes/sobrevive'
   },
   {
     id: 'donde-estoy',
     nombre: '¿Dónde estoy?',
     descripcion: 'Adivina el lugar viendo fotos de Costa Rica.',
     imagen: '/imagenes/donde_estoy.png',
-    ruta: '/jugar/donde-estoy'
+    ruta: '/quizzes/donde-estoy'
   },
   {
     id: 'habla-tico',
     nombre: 'Habla como tico',
     descripcion: 'Demuestra si entiendes la verdadera calle de Costa Rica.',
     imagen: '/imagenes/habla_como_tico.png',
-    ruta: '/jugar/habla-tico'
+    ruta: '/quizzes/habla-tico'
   },
   {
     id: 'verdadero-falso',
     nombre: 'Verdadero o falso',
     descripcion: 'Mitos y verdades de nuestro país.',
     imagen: '/imagenes/verdadero_falso.png',
-    ruta: '/jugar/verdadero-falso'
+    ruta: '/quizzes/verdadero-falso'
   }
 ]);
 
@@ -46,8 +46,8 @@ const juegos = ref([
 
 <template>
   <div class="jugar-container">
-    <h1 class="title">Modos de <span class="highlight">Juego</span></h1>
-    <p class="subtitle">Elige cómo quieres explorar y aprender sobre Costa Rica</p>
+    <h1 class="title">Quizzes <span class="highlight">Ticos</span></h1>
+    <p class="subtitle">Poné a prueba tu conocimiento sobre nuestra cultura y tradiciones</p>
 
     <div class="grid-juegos">
       <!-- v-for: Es la forma en que Vue hace "bucles" para repetir elementos.

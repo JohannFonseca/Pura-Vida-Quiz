@@ -12,7 +12,7 @@ const minijuegos = ref([
     nombre: '🏃 Pura Vida Runner',
     descripcion: 'Corre por parajes de Costa Rica, esquiva obstáculos y recolecta elementos nacionales.',
     imagen: '/imagenes/minijuego_bg_seamless.png',
-    ruta: '/jugar/beta'
+    ruta: '/minijuegos/runner'
   },
   {
     id: 'pelea',

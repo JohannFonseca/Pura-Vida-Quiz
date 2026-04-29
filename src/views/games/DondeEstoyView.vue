@@ -187,7 +187,7 @@ const feedbackData = computed(() => {
 
 const shareToWhatsapp = () => {
   const p = scorePercentage.value
-  const msg = `Saqué ${p}% como experto en el juego ¿Dónde estoy? 🇨🇷🔥 ¡Intenta superarme entrando acá: ${window.location.origin}/jugar/donde-estoy !`
+  const msg = `Saqué ${p}% como experto en el juego ¿Dónde estoy? 🇨🇷🔥 ¡Intenta superarme entrando acá: ${window.location.origin}/quizzes/donde-estoy !`
   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank')
 }
 
@@ -215,7 +215,7 @@ onUnmounted(() => clearInterval(timerInterval))
           <p>💡 3 Comodines globales por partida</p>
         </div>
         <button @click="startGame" class="btn-primary">Jugar Ahora</button>
-        <button @click="$router.push('/jugar')" class="btn-secondary">Volver Atrás</button>
+        <button @click="$router.push('/quizzes')" class="btn-secondary">Volver Atrás</button>
       </div>
 
       <!-- PANTALLA: JUEGO / VALIDACIÓN -->
@@ -313,7 +313,7 @@ onUnmounted(() => clearInterval(timerInterval))
 
         <div class="nav-bottom">
           <button @click="startGame" class="btn-primary">Intentar de nuevo</button>
-          <button @click="$router.push('/jugar')" class="btn-secondary">Ir a Juegos</button>
+          <button @click="$router.push('/quizzes')" class="btn-secondary">Ir a Juegos</button>
         </div>
       </div>
 

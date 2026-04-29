@@ -138,7 +138,7 @@ onUnmounted(() => {
           <p>🐾 8 situaciones críticas</p>
         </div>
         <button @click="startGame" class="btn-primary">Empezar a Vivir</button>
-        <button @click="$router.push('/jugar')" class="btn-secondary">Volver Atrás</button>
+        <button @click="$router.push('/quizzes')" class="btn-secondary">Volver Atrás</button>
       </div>
 
       <!-- PANTALLA: JUEGO / VALIDACIÓN -->
@@ -204,7 +204,7 @@ onUnmounted(() => {
 
         <div class="action-buttons">
           <button @click="startGame" class="btn-primary">Sobrevivir de Nuevo</button>
-          <button @click="$router.push('/jugar')" class="btn-secondary">Volver al Menú</button>
+          <button @click="$router.push('/quizzes')" class="btn-secondary">Volver al Menú</button>
         </div>
       </div>
 

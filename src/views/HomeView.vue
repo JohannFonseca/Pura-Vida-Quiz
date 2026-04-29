@@ -5,7 +5,7 @@
     
     <!-- router-link es el componente de VueRouter que nos permite navegar entre páginas
          sin que el navegador tenga que recargar todo (SPA - Single Page Application) -->
-    <router-link to="/jugar" style="text-decoration: none;">
+    <router-link to="/quizzes" style="text-decoration: none;">
       <button class="cta-button">Empezar a Jugar</button>
     </router-link>
 

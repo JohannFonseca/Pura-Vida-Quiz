@@ -36,7 +36,7 @@ const closeMenu = () => {
         <!-- Links de navegación con 'router-link' -->
         <div class="nav-links" :class="{ 'open': isMenuOpen }">
           <router-link to="/" class="nav-btn" active-class="active" @click="closeMenu">Inicio</router-link>
-          <router-link to="/jugar" class="nav-btn" active-class="active" @click="closeMenu">Quizzes</router-link>
+          <router-link to="/quizzes" class="nav-btn" active-class="active" @click="closeMenu">Quizzes</router-link>
           <router-link to="/minijuegos" class="nav-btn" active-class="active" @click="closeMenu">Minijuegos</router-link>
           <router-link to="/ranking" class="nav-btn" active-class="active" @click="closeMenu">Ranking</router-link>
           <router-link to="/planificador" class="nav-btn" active-class="active" @click="closeMenu">Planificar</router-link>

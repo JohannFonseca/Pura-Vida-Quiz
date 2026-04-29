@@ -112,7 +112,7 @@ onUnmounted(() => {
 
     <!-- HEADER -->
     <div class="runner-header">
-      <button class="btn-back" @click="router.push('/jugar')">⬅ Volver</button>
+      <button class="btn-back" @click="router.push('/minijuegos')">⬅ Volver</button>
       <div class="title-block">
         <h1 class="runner-title">🏃 Pura Vida Runner</h1>
         <p class="runner-sub">Recoge elementos de Costa Rica y esquivá obstáculos</p>
@@ -166,7 +166,7 @@ onUnmounted(() => {
             <p v-if="finalScore>=uiBest && uiBest>0" class="new-record">🎉 ¡Nuevo récord!</p>
             <div class="ov-btns">
               <button id="btn-retry" class="btn-primary" @click="startGame">Volver a intentar</button>
-              <button class="btn-secondary" @click="router.push('/jugar')">Salir</button>
+              <button class="btn-secondary" @click="router.push('/minijuegos')">Salir</button>
             </div>
           </div>
         </div>

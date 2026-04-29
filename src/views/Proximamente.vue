@@ -16,7 +16,7 @@
       <p>Estamos preparando un nuevo modo de juego para que sigás aprendiendo sobre Costa Rica.</p>
       
       <!-- router-link para volver atrás de forma segura -->
-      <router-link to="/jugar" class="btn-back">
+      <router-link to="/quizzes" class="btn-back">
         Volver a los juegos
       </router-link>
     </div>
