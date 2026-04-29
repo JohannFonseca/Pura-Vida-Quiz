@@ -52,9 +52,18 @@ const juegos = ref([
     <div class="grid-juegos">
       <!-- v-for: Es la forma en que Vue hace "bucles" para repetir elementos.
            Iteramos sobre el arreglo 'juegos' y creamos una tarjeta para cada uno. -->
-      <div v-for="juego in juegos" :key="juego.id" class="card-juego" @click="$router.push(juego.ruta)">
+      <div
+        v-for="juego in juegos"
+        :key="juego.id"
+        class="card-juego"
+        @click="$router.push(juego.ruta)"
+      >
         <div class="card-img-container">
-          <img :src="juego.imagen" :alt="juego.nombre" class="card-img">
+          <!-- Si el juego tiene imagen la mostramos; si no, usamos un placeholder con ícono -->
+          <img v-if="juego.imagen" :src="juego.imagen" :alt="juego.nombre" class="card-img">
+          <div v-else class="card-img-placeholder">
+            <span class="placeholder-icon">🎮</span>
+          </div>
         </div>
         <div class="card-content">
           <h2 class="card-title">{{ juego.nombre }}</h2>
@@ -182,6 +191,25 @@ const juegos = ref([
   font-size: 1rem;
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+/* PLACEHOLDER cuando no hay imagen */
+.card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #166534 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.placeholder-icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }
 
 /* AJUSTES RESPONSIVOS */

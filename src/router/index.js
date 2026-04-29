@@ -47,6 +47,11 @@ const router = createRouter({
       component: () => import('../views/games/VerdaderoFalsoView.vue')
     },
     {
+      path: '/jugar/beta',
+      name: 'beta',
+      component: () => import('../views/games/BetaScreen.vue')
+    },
+    {
       path: '/ranking',
       name: 'ranking',
       component: () => import('../views/RankingView.vue')
@@ -60,6 +65,16 @@ const router = createRouter({
       path: '/planificador',
       name: 'planificador',
       component: () => import('../views/PlanificaTuViajeView.vue')
+    },
+    {
+      path: '/minijuegos',
+      name: 'minijuegos',
+      component: () => import('../views/MinijuegosView.vue')
+    },
+    {
+      path: '/minijuegos/pelea',
+      name: 'pelea',
+      component: () => import('../views/games/FightView.vue')
     },
     {
       path: '/proximamente',

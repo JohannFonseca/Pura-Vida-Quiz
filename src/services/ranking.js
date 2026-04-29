@@ -45,6 +45,7 @@ export async function guardarPuntuacion(usuario, puntuacion, sala = '') {
         sala: sala 
       }
     ])
+    .select()
 
   // Es importante revisar siempre si hubo error al guardar.
   if (error) {

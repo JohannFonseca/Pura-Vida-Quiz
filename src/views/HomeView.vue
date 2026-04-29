@@ -8,6 +8,8 @@
     <router-link to="/jugar" style="text-decoration: none;">
       <button class="cta-button">Empezar a Jugar</button>
     </router-link>
+
+
   </div>
 
   <!-- Decoración visual: El efecto del océano en la parte inferior -->
@@ -89,6 +91,8 @@
 .cta-button:active {
   transform: translateY(1px);
 }
+
+
 
 /* Responsivo: Ajustes para pantallas de celular */
 @media (max-width: 768px) {
