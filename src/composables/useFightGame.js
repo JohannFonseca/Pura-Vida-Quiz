@@ -24,11 +24,29 @@ const tone = (f, t, d, v = 0.18) => {
 }
 
 export const sfx = {
-  punch: () => { tone(90, 'sawtooth', 0.08, 0.35); tone(140, 'square', 0.06, 0.2) },
-  hit:   () => tone(160, 'sawtooth', 0.18, 0.28),
-  jump:  () => tone(420, 'sine', 0.14, 0.1),
-  win:   () => { tone(523,'sine',0.18); setTimeout(()=>tone(659,'sine',0.18),200); setTimeout(()=>tone(784,'sine',0.38),400) },
-  lose:  () => { tone(300,'sawtooth',0.18); setTimeout(()=>tone(180,'sawtooth',0.32),220) }
+  select: () => { tone(440, 'square', 0.1, 0.15); setTimeout(()=>tone(880, 'square', 0.05, 0.1), 50) },
+  punch: () => { tone(80, 'sawtooth', 0.1, 0.4); tone(150, 'square', 0.05, 0.2) },
+  hit:   () => { tone(60, 'sawtooth', 0.25, 0.5); tone(120, 'square', 0.1, 0.3) },
+  heavy: () => { tone(40, 'sawtooth', 0.4, 0.6); tone(80, 'square', 0.2, 0.4) },
+  block: () => tone(280, 'square', 0.06, 0.2),
+  jump:  () => tone(380, 'sine', 0.15, 0.12),
+  win:   () => { 
+    tone(523,'sine',0.2); setTimeout(()=>tone(659,'sine',0.2),150); 
+    setTimeout(()=>tone(784,'sine',0.2),300); setTimeout(()=>tone(1046,'sine',0.4),450) 
+  },
+  lose:  () => { tone(200,'sawtooth',0.3); setTimeout(()=>tone(100,'sawtooth',0.5),250) },
+  crowd: () => {
+    try {
+      const a = ac(), g = a.createGain(), n = a.createOscillator()
+      n.type = 'sine'; n.frequency.value = 100
+      const lfo = a.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.5
+      const lfoGain = a.createGain(); lfoGain.gain.value = 40
+      lfo.connect(lfoGain); lfoGain.connect(n.frequency)
+      n.connect(g); g.connect(a.destination)
+      g.gain.value = 0.015; n.start(); lfo.start()
+      return { stop: () => { n.stop(); lfo.stop() } }
+    } catch (_) { return { stop: () => {} } }
+  }
 }
 
 // ── HELPERS / UTILIDADES ────────────────────────────────────────────────────
@@ -47,156 +65,257 @@ import { SIZES } from '../data/fighters.js'
 
 // ── RENDERIZADO DE PERSONAJES ───────────────────────────────────────────────
 // Esta función es el alma visual. Dibuja al luchador pieza por pieza en el Canvas.
-export function drawSprite(ctx, f, animT) {
-  const { palette: p, id } = f
-  const size = SIZES[id] || { w: 48, h: 80 }
-  const fw = size.w, fh = size.h
-  
-  // Efecto de "vaivén" al caminar usando una onda Seno.
-  const swing = f.state === 'walk' ? Math.sin(animT * 11) * 7 : 0
-  const sx = f.x + (f.shake > 0 ? (Math.random() - 0.5) * 7 * f.shake : 0)
-  const sy = f.y
-
-  // Sombra proyectada en el suelo.
-  ctx.fillStyle = 'rgba(0,0,0,0.18)'
-  ctx.beginPath(); ctx.ellipse(sx + fw/2, GROUND_Y+4, fw*0.6, 5, 0, 0, Math.PI*2); ctx.fill()
-
-  // Si acaba de recibir un golpe, parpadea (efecto visual clásico).
-  if (f.hitCooldown > 0 && Math.floor(f.hitCooldown * 12) % 2 === 0) return
-
+// Helper: Dibujar textura de píxeles (ruido) para que no se vea plano
+const drawTexture = (ctx, x, y, w, h, density = 0.15) => {
   ctx.save()
-  ctx.translate(sx + fw/2, sy + fh/2)
-  if (f.facing < 0) ctx.scale(-1, 1) // Voltear al personaje si mira a la izquierda
-  
-  const cx = 0, cy = 0
-  const scaleY = f.state === 'jump' ? 0.85 : 1 // Aplastarse un poco al saltar
-  
-  // Proporciones dinámicas según el personaje (Gordo vs Flaco).
-  let bodyW = fw * 0.7
-  let headR = 13
-  let legH = 28
-  
-  if (id === 'porcio') { bodyW = fw * 0.9; legH = 20 }
-  if (id === 'bb7') { bodyW = fw * 0.5; legH = 35; headR = 10 }
-
-  // Piernas
-  ctx.fillStyle = p.body
-  ctx.fillRect(cx - bodyW/3, cy + 18 * scaleY, bodyW/3, legH + swing)
-  ctx.fillRect(cx + 2,  cy + 18 * scaleY, bodyW/3, legH - swing)
-
-  // Zapatos
-  ctx.fillStyle = p.shoe
-  ctx.fillRect(cx - bodyW/3 - 2, cy + (18+legH-4) * scaleY, bodyW/3+4, 8)
-  ctx.fillRect(cx + 2,  cy + (18+legH-4) * scaleY, bodyW/3+4, 8)
-
-  // Cinturón
-  ctx.fillStyle = p.belt
-  ctx.fillRect(cx - bodyW/2, cy + 14 * scaleY, bodyW, 6)
-
-  // Cuerpo / Camisa
-  ctx.fillStyle = p.body
-  rr(ctx, cx - bodyW/2, cy - 14 * scaleY, bodyW, 30 * scaleY, id === 'porcio' ? 10 : 4); ctx.fill()
-
-  // Brazo de ataque (solo si está atacando)
-  if (f.state === 'attack') {
-    ctx.fillStyle = p.skin
-    ctx.fillRect(cx + bodyW/2 - 2, cy - 8 * scaleY, 22, 10)
-  }
-
-  // Brazos normales
-  ctx.fillStyle = p.body
-  ctx.fillRect(cx - bodyW/2 - 10, cy - 10 * scaleY, 11, 20)  // Brazo izq
-  ctx.fillRect(cx + bodyW/2 - 1,  cy - 10 * scaleY, 11, 20)  // Brazo der
-
-  // Manos
-  ctx.fillStyle = p.skin
-  ctx.beginPath(); ctx.arc(cx - bodyW/2 - 5, cy + 10 * scaleY, 5, 0, Math.PI*2); ctx.fill()
-  ctx.beginPath(); ctx.arc(cx + bodyW/2 + 5, cy + 10 * scaleY, 5, 0, Math.PI*2); ctx.fill()
-
-  // Cuello y Cabeza
-  ctx.fillStyle = p.skin
-  ctx.fillRect(cx - 5, cy - 22 * scaleY, 10, 10)
-  ctx.beginPath(); ctx.arc(cx, cy - 30 * scaleY, headR, 0, Math.PI*2); ctx.fill()
-
-  // Ojos (BB7 los tiene raros/feos por diseño)
-  ctx.fillStyle = '#1a0900'
-  if (id === 'bb7') {
-    ctx.fillRect(cx + 4, cy - 36 * scaleY, 4, 2)
-    ctx.fillRect(cx - 8, cy - 32 * scaleY, 4, 2)
-  } else {
-    ctx.fillRect(cx + 3, cy - 34 * scaleY, 3, 3)
-    ctx.fillRect(cx - 6, cy - 34 * scaleY, 3, 3)
-  }
-
-  // Sombreros / Pelo (Personalizado por ID)
-  ctx.fillStyle = p.hatBrim
-  if (id === 'guanacasteco') {
-    ctx.fillStyle = p.hatBrim; ctx.fillRect(cx - 20, cy - 42 * scaleY, 40, 5) 
-    ctx.fillStyle = p.hat; ctx.fillRect(cx - 10, cy - 58 * scaleY, 20, 16) 
-  } else if (id === 'pipi') {
-    ctx.fillStyle = p.hat
-    ctx.beginPath(); ctx.arc(cx - 10, cy - 30 * scaleY, 10, 0, Math.PI*2); ctx.fill()
-    ctx.beginPath(); ctx.arc(cx + 10, cy - 30 * scaleY, 10, 0, Math.PI*2); ctx.fill()
-    ctx.beginPath(); ctx.arc(cx, cy - 42 * scaleY, 14, 0, Math.PI*2); ctx.fill()
-    ctx.fillStyle = '#ff69b4'; ctx.fillRect(cx - 6, cy - 54 * scaleY, 12, 6)
-  } else if (id === 'keylor') {
-    ctx.fillStyle = p.hat; rr(ctx, cx - 14, cy - 48 * scaleY, 28, 12, 8); ctx.fill()
-  } else if (id === 'porcio') {
-    ctx.fillStyle = p.hat; ctx.fillRect(cx - 18, cy - 42 * scaleY, 36, 4); ctx.fillRect(cx - 12, cy - 50 * scaleY, 24, 10)
-  } else {
-    ctx.fillStyle = p.hatBrim; ctx.fillRect(cx - 16, cy - 44 * scaleY, 32, 5)
-    ctx.fillStyle = p.hat; rr(ctx, cx - 12, cy - 55 * scaleY, 24, 14, 6); ctx.fill()
-  }
-
-  // Flash rojo al ser golpeado.
-  if (f.state === 'hit') {
-    ctx.fillStyle = 'rgba(255,50,50,0.4)'; ctx.fillRect(cx - fw/2, cy - fh/2, fw, fh)
+  ctx.globalAlpha = 0.12
+  for (let i = 0; i < (w * h * density); i++) {
+    const px = Math.random() * w
+    const py = Math.random() * h
+    ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#000'
+    ctx.fillRect(x + px, y + py, 2, 2)
   }
   ctx.restore()
 }
 
+export function drawSprite(ctx, f, animT) {
+  const { palette: p, id } = f
+  const size = SIZES[id] || { w: 48, h: 80 }
+  const fw = size.w, fh = size.h
+
+  // Vaivén al caminar
+  const swing = f.state === 'walk' ? Math.sin(animT * 12) * 8 : 0
+  // Agacharse al aterrizar (squash)
+  const squash = f.state === 'jump' ? 0.82 : 1
+  const sx = f.x + (f.shake > 0 ? (Math.random()-.5)*8*f.shake : 0)
+  const sy = f.y
+
+  // Sombra en el suelo
+  const shadowAlpha = Math.max(0.05, 0.22 - (GROUND_Y - (sy+fh)) * 0.0004)
+  ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`
+  const shadowScaleX = f.state === 'jump' ? 0.4 : 0.65
+  ctx.beginPath(); ctx.ellipse(sx+fw/2, GROUND_Y+5, fw*shadowScaleX, 5, 0, 0, Math.PI*2); ctx.fill()
+
+  // Parpadeo al recibir golpe
+  if (f.hitCooldown > 0 && Math.floor(f.hitCooldown*14)%2===0) return
+
+  ctx.save()
+  ctx.translate(sx+fw/2, sy+fh/2)
+  if (f.facing < 0) ctx.scale(-1,1)
+
+  const cx=0, cy=0
+  let bW = fw*0.68, headR=13, legH=28
+
+  if (id==='porcio')      { bW=fw*0.92; legH=18; headR=15 }
+  else if (id==='bb7')    { bW=fw*0.5;  legH=36; headR=10 }
+  else if (id==='pipi')   { bW=fw*0.58; legH=32; headR=11 }
+  else if (id==='keylor') { bW=fw*0.7;  legH=30; headR=13 }
+
+  // ── Piernas
+  const legSwingA = swing, legSwingB = -swing
+  ctx.fillStyle=p.body
+  ctx.fillRect(cx-bW/3, cy+18*squash, bW/3, legH+legSwingA)
+  ctx.fillRect(cx+2,    cy+18*squash, bW/3, legH+legSwingB)
+  drawTexture(ctx, cx-bW/3, cy+18*squash, bW/3, legH+legSwingA, 0.1)
+  drawTexture(ctx, cx+2,    cy+18*squash, bW/3, legH+legSwingB, 0.1)
+
+  // Zapatos
+  ctx.fillStyle=p.shoe
+  ctx.fillRect(cx-bW/3-3, cy+(18+legH-4)*squash, bW/3+5, 9)
+  ctx.fillRect(cx+1,       cy+(18+legH-4)*squash, bW/3+5, 9)
+
+  // ── Cuerpo con degradado y textura
+  const bodyGrad = ctx.createLinearGradient(cx-bW/2, 0, cx+bW/2, 0)
+  bodyGrad.addColorStop(0, shadeColor(p.body, -25))
+  bodyGrad.addColorStop(0.4, p.body)
+  bodyGrad.addColorStop(1, shadeColor(p.body, -15))
+  ctx.fillStyle=bodyGrad
+  rr(ctx,cx-bW/2,cy-14*squash,bW,30*squash, id==='porcio'?10:4); ctx.fill()
+  drawTexture(ctx, cx-bW/2, cy-14*squash, bW, 30*squash, 0.2)
+
+  // Cinturón
+  ctx.fillStyle=p.belt
+  ctx.fillRect(cx-bW/2,cy+14*squash,bW,7)
+  ctx.fillStyle='#fbbf24'; ctx.fillRect(cx-4,cy+14*squash,8,7)
+
+  // ── Brazos
+  const attackExtend = f.state==='attack' ? 18 : 0
+  ctx.fillStyle=p.body
+  ctx.fillRect(cx-bW/2-11, cy-10*squash, 11, 20)
+  if (f.state==='attack') {
+    ctx.fillRect(cx+bW/2-2, cy-9*squash, 24+attackExtend, 11)
+    drawTexture(ctx, cx+bW/2-2, cy-9*squash, 24+attackExtend, 11, 0.3)
+  } else {
+    ctx.fillRect(cx+bW/2-1, cy-10*squash, 11, 20)
+  }
+
+  // Manos
+  ctx.fillStyle=p.skin
+  ctx.beginPath(); ctx.arc(cx-bW/2-6, cy+10*squash, 6, 0, Math.PI*2); ctx.fill()
+  if (f.state==='attack') {
+    ctx.beginPath(); ctx.arc(cx+bW/2+22+attackExtend, cy-4*squash, 7, 0, Math.PI*2); ctx.fill()
+  } else {
+    ctx.beginPath(); ctx.arc(cx+bW/2+6, cy+10*squash, 6, 0, Math.PI*2); ctx.fill()
+  }
+
+  // ── Cabeza con textura de piel
+  ctx.fillStyle=p.skin
+  ctx.fillRect(cx-5, cy-22*squash, 10, 10)
+  const headGrad = ctx.createRadialGradient(cx-3,cy-32*squash,2,cx,cy-30*squash,headR)
+  headGrad.addColorStop(0,'#fff8f0'); headGrad.addColorStop(1,p.skin)
+  ctx.fillStyle=headGrad
+  ctx.beginPath(); ctx.arc(cx,cy-30*squash,headR,0,Math.PI*2); ctx.fill()
+  drawTexture(ctx, cx-headR, cy-30*squash-headR, headR*2, headR*2, 0.05)
+
+  // Ojos y detalles faciales
+  const eyeY = cy-34*squash
+  ctx.fillStyle='#1a0900'
+  if (id==='bb7') {
+    ctx.fillRect(cx+4,eyeY,4,2); ctx.fillRect(cx-8,eyeY+4,4,2)
+  } else {
+    ctx.fillRect(cx+3,eyeY,3,3); ctx.fillRect(cx-6,eyeY,3,3)
+  }
+
+  // Sombreros (simplificados para no exceder tokens)
+  ctx.fillStyle=p.hat
+  if (id==='guanacasteco') {
+    ctx.fillRect(cx-22,cy-42*squash,44,5); ctx.fillRect(cx-11,cy-58*squash,22,17)
+  } else if (id==='pipi') {
+    ctx.beginPath(); ctx.arc(cx-10,cy-30*squash,11,0,Math.PI*2); ctx.fill()
+    ctx.beginPath(); ctx.arc(cx+10,cy-30*squash,11,0,Math.PI*2); ctx.fill()
+    ctx.beginPath(); ctx.arc(cx,cy-43*squash,14,0,Math.PI*2); ctx.fill()
+  } else {
+    ctx.fillRect(cx-18,cy-44*squash,36,5); ctx.fillRect(cx-12,cy-57*squash,24,15)
+  }
+
+  if (f.state==='hit') {
+    ctx.fillStyle='rgba(255,60,60,0.35)'; ctx.fillRect(cx-fw/2,cy-fh/2,fw,fh)
+  }
+  ctx.restore()
+}
+
+// Helper: oscurecer/aclarar un color hex en `amount` (negativo = oscuro)
+function shadeColor(hex, amount) {
+  let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16)
+  r=Math.max(0,Math.min(255,r+amount)); g=Math.max(0,Math.min(255,g+amount)); b=Math.max(0,Math.min(255,b+amount))
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')
+}
+
 // ── DIBUJO DEL ESCENARIO (ARENA) ─────────────────────────────────────────────
-// Redondel de toros con degradados y público animado.
 const CROWD_COLORS = ['#dc2626','#1d4ed8','#16a34a','#d97706','#7c3aed','#db2777','#0891b2','#ea580c']
 
-export function drawArena(ctx, crowdAnim) {
-  // Cielo (Degradado Lineal)
+function drawCameraFlashes(ctx) {
+  if (Math.random() > 0.96) {
+    const fx = Math.random() * CW
+    const fy = 40 + Math.random() * 80
+    const grad = ctx.createRadialGradient(fx, fy, 0, fx, fy, 40)
+    grad.addColorStop(0, 'rgba(255,255,255,0.8)')
+    grad.addColorStop(1, 'rgba(255,255,255,0)')
+    ctx.fillStyle = grad
+    ctx.beginPath(); ctx.arc(fx, fy, 40, 0, Math.PI*2); ctx.fill()
+  }
+}
+
+export function drawArena(ctx, crowdAnim, bgImg) {
+  if (bgImg && bgImg.complete) {
+    ctx.drawImage(bgImg, 0, 0, CW, CH)
+    drawCameraFlashes(ctx)
+    // Capa de tinte atardecer suave para unificar
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.1)'
+    ctx.fillRect(0,0,CW,CH)
+    return
+  }
+
+  // ── Cielo multicapa: atardecer rico (FALLBACK)
   const sky = ctx.createLinearGradient(0,0,0,CH)
-  sky.addColorStop(0,'#5BA3C9'); sky.addColorStop(0.45,'#F4C882'); sky.addColorStop(1,'#E8A96A')
+  sky.addColorStop(0,'#1a0533')
+  sky.addColorStop(0.25,'#6b21a8')
+  sky.addColorStop(0.55,'#ea580c')
+  sky.addColorStop(0.78,'#fbbf24')
+  sky.addColorStop(1,'#fef3c7')
   ctx.fillStyle = sky; ctx.fillRect(0,0,CW,CH)
 
-  // Público (Filas traseras) - Usamos Math.sin para que "salten".
-  for (let i = 0; i < 42; i++) {
-    const x = i * 20 - 4
-    const bob = Math.sin(crowdAnim * 2.5 + i * 0.8) * 3
-    ctx.fillStyle = CROWD_COLORS[i % CROWD_COLORS.length]
-    ctx.fillRect(x, 55 + bob, 15, 26)
-    ctx.fillStyle = '#F4C882'; ctx.beginPath(); ctx.arc(x + 7, 50 + bob, 7, 0, Math.PI*2); ctx.fill()
+  // ── Nubes (formas ovaladas semi-transparentes)
+  const clouds = [[120,38,70,22],[310,25,90,18],[520,42,60,16],[680,30,80,20]]
+  ctx.fillStyle='rgba(255,240,210,0.18)'
+  clouds.forEach(([cx,cy,rw,rh])=>{ ctx.beginPath(); ctx.ellipse(cx,cy,rw,rh,0,0,Math.PI*2); ctx.fill() })
+
+  // ── Resplandor solar (corona naranja detrás del estadio)
+  const glow = ctx.createRadialGradient(CW/2,80,10,CW/2,80,200)
+  glow.addColorStop(0,'rgba(251,191,36,0.22)'); glow.addColorStop(1,'rgba(251,191,36,0)')
+  ctx.fillStyle=glow; ctx.fillRect(0,0,CW,220)
+
+  // ── Gradas: gradiente de sombra profunda
+  const stand = ctx.createLinearGradient(0,40,0,210)
+  stand.addColorStop(0,'rgba(30,10,5,0.7)'); stand.addColorStop(1,'rgba(30,10,5,0)')
+  ctx.fillStyle=stand; ctx.fillRect(0,40,CW,170)
+
+  // ── Público (2 filas con animación)
+  for (let row=0; row<2; row++) {
+    for (let i=0; i<44; i++) {
+      const x = i*19 - 2
+      const bob = Math.sin(crowdAnim*2.8 + i*0.7 + row*1.3)*4
+      const baseY = 44 + row*22 + bob
+      // Cuerpo
+      ctx.fillStyle = CROWD_COLORS[(i+row*3)%CROWD_COLORS.length]
+      ctx.fillRect(x+1, baseY+9, 13, 20)
+      // Cabeza
+      ctx.fillStyle='#f5d6a0'; ctx.beginPath(); ctx.arc(x+7,baseY+5,6,0,Math.PI*2); ctx.fill()
+      // Brazos animados (los agitan)
+      if (row===0) {
+        const armY = baseY + 12 + Math.sin(crowdAnim*3+i)*4
+        ctx.strokeStyle=CROWD_COLORS[(i+row*3)%CROWD_COLORS.length]; ctx.lineWidth=2; ctx.beginPath()
+        ctx.moveTo(x+1,baseY+13); ctx.lineTo(x-5,armY); ctx.stroke()
+        ctx.moveTo(x+13,baseY+13); ctx.lineTo(x+19,armY); ctx.stroke()
+      }
+    }
   }
 
-  // Gradas (Sombras)
-  const stand = ctx.createLinearGradient(0,70,0,200)
-  stand.addColorStop(0,'rgba(80,50,20,0.85)'); stand.addColorStop(1,'rgba(80,50,20,0)')
-  ctx.fillStyle = stand; ctx.fillRect(0,70,CW,160)
+  // ── Barrera de cemento del redondel
+  const barrier = ctx.createLinearGradient(0,190,0,215)
+  barrier.addColorStop(0,'#e2e8f0'); barrier.addColorStop(1,'#94a3b8')
+  ctx.fillStyle=barrier; ctx.fillRect(ARENA_L-30,190,CW-ARENA_L*2+60,28)
+  ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fillRect(ARENA_L-30,215,CW-ARENA_L*2+60,5)
 
-  // Vallas de madera (Tablas)
-  for (let y = 215; y < GROUND_Y; y += 38) {
-    ctx.fillStyle = '#9B7035'; rr(ctx, ARENA_L-22, y, 18, 32, 3); ctx.fill()
-    ctx.strokeStyle='#6B4A1A'; ctx.lineWidth=1; ctx.stroke()
-    ctx.fillStyle = '#9B7035'; rr(ctx, ARENA_R+4, y, 18, 32, 3); ctx.fill()
-    ctx.strokeStyle='#6B4A1A'; ctx.lineWidth=1; ctx.stroke()
+  // ── Vallas de madera (tablones con veta)
+  for (let i=0; i<8; i++) {
+    const y = 218 + i*19
+    if (y > GROUND_Y) break
+    // Tablones izquierda
+    const g1 = ctx.createLinearGradient(ARENA_L-26,0,ARENA_L-8,0)
+    g1.addColorStop(0,'#7c5c28'); g1.addColorStop(0.5,'#b8893c'); g1.addColorStop(1,'#7c5c28')
+    ctx.fillStyle=g1; rr(ctx,ARENA_L-26,y,18,16,2); ctx.fill()
+    // Tablones derecha
+    const g2 = ctx.createLinearGradient(ARENA_R+4,0,ARENA_R+22,0)
+    g2.addColorStop(0,'#7c5c28'); g2.addColorStop(0.5,'#b8893c'); g2.addColorStop(1,'#7c5c28')
+    ctx.fillStyle=g2; rr(ctx,ARENA_R+4,y,18,16,2); ctx.fill()
   }
-  ctx.fillStyle='#6B4A1A'; ctx.fillRect(ARENA_L-26, 210, 6, GROUND_Y-208)
-  ctx.fillStyle='#6B4A1A'; ctx.fillRect(ARENA_R+20, 210, 6, GROUND_Y-208)
+  // Postes verticales
+  ctx.fillStyle='#5c3d0e'; ctx.fillRect(ARENA_L-28,190,7,GROUND_Y-188)
+  ctx.fillStyle='#5c3d0e'; ctx.fillRect(ARENA_R+21,190,7,GROUND_Y-188)
 
-  // Suelo de arena
+  // ── Suelo de arena con textura
   const floor = ctx.createLinearGradient(0,GROUND_Y,0,CH)
-  floor.addColorStop(0,'#C68A3A'); floor.addColorStop(0.08,'#8B5E1E'); floor.addColorStop(1,'#3D2008')
-  ctx.fillStyle = floor; ctx.fillRect(0,GROUND_Y,CW,CH-GROUND_Y)
+  floor.addColorStop(0,'#d4903c'); floor.addColorStop(0.06,'#a0682a'); floor.addColorStop(1,'#3d1e05')
+  ctx.fillStyle=floor; ctx.fillRect(0,GROUND_Y,CW,CH-GROUND_Y)
 
-  // Círculo central (Marca del redondel)
-  ctx.strokeStyle='rgba(255,210,110,0.22)'; ctx.lineWidth=2
-  ctx.beginPath(); ctx.ellipse(CW/2,GROUND_Y+6,260,11,0,0,Math.PI*2); ctx.stroke()
+  // Textura de arena: líneas de sombra sutiles
+  ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.lineWidth=1
+  for (let i=0; i<12; i++) {
+    const yy = GROUND_Y + 10 + i*9
+    ctx.beginPath(); ctx.moveTo(ARENA_L,yy); ctx.lineTo(ARENA_R,yy); ctx.stroke()
+  }
+
+  // ── Círculo central del redondel (3 elipses)
+  ctx.strokeStyle='rgba(255,200,80,0.35)'; ctx.lineWidth=2
+  ctx.beginPath(); ctx.ellipse(CW/2,GROUND_Y+8,240,10,0,0,Math.PI*2); ctx.stroke()
+  ctx.strokeStyle='rgba(255,200,80,0.15)'; ctx.lineWidth=1
+  ctx.beginPath(); ctx.ellipse(CW/2,GROUND_Y+8,320,14,0,0,Math.PI*2); ctx.stroke()
+
+  // ── Luz cenital: reflejo de luz de estadio en el suelo
+  const spotlight = ctx.createRadialGradient(CW/2,GROUND_Y+20,10,CW/2,GROUND_Y+20,300)
+  spotlight.addColorStop(0,'rgba(255,230,150,0.18)'); spotlight.addColorStop(1,'rgba(255,230,150,0)')
+  ctx.fillStyle=spotlight; ctx.fillRect(0,GROUND_Y,CW,CH-GROUND_Y)
 }
 
 // ── INTERFAZ DE USUARIO (HUD) ───────────────────────────────────────────────
@@ -250,7 +369,7 @@ function makeFighter(data, isP1) {
 }
 
 // Inicializa el estado global de la pelea.
-export function makeState(f1data, f2data) {
+export function makeState(f1data, f2data, bgImg) {
   return {
     p1: makeFighter(f1data, true),
     p2: makeFighter(f2data, false),
@@ -259,6 +378,7 @@ export function makeState(f1data, f2data) {
     winner: null,
     crowdAnim: 0,
     screenShake: 0,
+    bgImg: bgImg || null
   }
 }
 
@@ -364,6 +484,16 @@ function updateFighter(f, dt) {
   
   // Colisión con el suelo (Grounding)
   if (f.y + size.h >= GROUND_Y) { 
+    if (!f.onGround && f.vy > 100) {
+      // Efecto de polvo al aterrizar
+      for (let k = 0; k < 6; k++) {
+        f.particles.push({
+          x: f.x + size.w/2 + (Math.random()-0.5)*size.w, y: GROUND_Y,
+          vx: (Math.random()-0.5)*120, vy: -Math.random()*50,
+          life: 0.4 + Math.random()*0.4, color: 'rgba(198, 138, 58, 0.4)', r: 1.5+Math.random()*2.5
+        })
+      }
+    }
     f.y = GROUND_Y - size.h; f.vy = 0; f.onGround = true 
   } else {
     f.onGround = false
@@ -459,7 +589,7 @@ export function render(ctx, gs) {
   ctx.save()
   if (shake) ctx.translate(shake, (Math.random()-.5)*shake*0.5)
 
-  drawArena(ctx, gs.crowdAnim)
+  drawArena(ctx, gs.crowdAnim, gs.bgImg)
 
   const { p1, p2 } = gs
 

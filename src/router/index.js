@@ -87,6 +87,11 @@ const router = createRouter({
       component: () => import('../views/games/FightView.vue')
     },
     {
+      path: '/minijuegos/pesca',
+      name: 'pesca',
+      component: () => import('../views/games/PescaProFPVView.vue')
+    },
+    {
       path: '/proximamente',
       name: 'proximamente',
       component: Proximamente
