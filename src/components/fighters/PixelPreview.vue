@@ -32,43 +32,68 @@ const mockFighter = (fighter, animT) => ({
   animT
 })
 
-const draw = (ts) => {
+const draw = () => {
   const canvas = canvasRef.value
   if (!canvas) return
   const ctx = canvas.getContext('2d')
+  if (!ctx) return
   ctx.imageSmoothingEnabled = false
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  const animT = props.animate ? (ts - startT) / 1000 : 0
+  const now = performance.now()
+  const animT = props.animate ? (now - startT) / 1000 : 0
 
   ctx.save()
   ctx.scale(props.scale, props.scale)
   drawPixelSprite(ctx, mockFighter(props.fighter, animT), animT)
   ctx.restore()
+}
 
-  if (props.animate) animId = requestAnimationFrame(draw)
+const tick = () => {
+  draw()
+  if (props.animate) {
+    animId = requestAnimationFrame(tick)
+  }
+}
+
+const startAnimation = () => {
+  if (animId) return
+  startT = performance.now()
+  animId = requestAnimationFrame(tick)
+}
+
+const stopAnimation = () => {
+  if (animId) {
+    cancelAnimationFrame(animId)
+    animId = null
+  }
 }
 
 onMounted(() => {
-  startT = performance.now()
   if (props.animate) {
-    animId = requestAnimationFrame(draw)
+    startAnimation()
   } else {
-    draw(0)
+    draw()
   }
 })
 
 onUnmounted(() => {
-  if (animId) cancelAnimationFrame(animId)
+  stopAnimation()
 })
 
-// Redibujar cuando cambia el personaje
-watch(() => props.fighter, () => {
-  if (!props.animate) {
-    startT = performance.now()
-    draw(0)
-  }
-})
+// Observador completo y reactivo para cambios de personaje y de estado de animación
+watch(
+  [() => props.fighter, () => props.animate],
+  ([newFighter, newAnimate], [oldFighter, oldAnimate]) => {
+    if (newAnimate) {
+      startAnimation()
+    } else {
+      stopAnimation()
+      draw()
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
