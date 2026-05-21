@@ -49,23 +49,12 @@ function drawScanlines(ctx) {
   ctx.restore()
 }
 
-// ── Countdown pixel art
+// ── Countdown pixel art (oscurece la pantalla; el texto se maneja en el HUD)
 function drawCountdown(ctx, gs) {
   if (gs.phase !== 'countdown') return
   ctx.save()
   ctx.fillStyle = 'rgba(0,0,0,0.55)'
   ctx.fillRect(0, 0, CW, CH)
-  const n = Math.ceil(gs.countdown)
-  const txt = n > 0 ? String(n) : 'FIGHT!'
-  // Pixel font effect: shadow offset
-  ctx.imageSmoothingEnabled = false
-  ctx.font = 'bold 96px monospace'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillStyle = '#000'
-  ctx.fillText(txt, CW / 2 + 4, CH / 2 + 4)
-  ctx.fillStyle = n > 0 ? '#fbbf24' : '#22c55e'
-  ctx.fillText(txt, CW / 2, CH / 2)
   ctx.restore()
 }
 

@@ -58,7 +58,12 @@ const timer = computed(() => Math.max(0, Math.ceil(props.gs.timer)))
     <Transition name="announcement">
       <div v-if="gs.announcement" class="announcement-wrap" :key="gs.announcement">
         <div class="announcement-text" :class="gs.announcement">
-          <template v-if="gs.announcement === 'round'">ASALTO {{ gs.round || 1 }}</template>
+          <template v-if="gs.announcement === 'round'">
+            <div class="announcement-round-container">
+              <div class="round-title">ASALTO {{ gs.round || 1 }}</div>
+              <div class="round-sub-countdown">{{ Math.max(1, Math.ceil(gs.countdown)) }}</div>
+            </div>
+          </template>
           <template v-else-if="gs.announcement === 'fight'">¡A PELEAR!</template>
           <template v-else-if="gs.announcement === 'p1_wins'">¡{{ gs.p1.name.toUpperCase() }} GANA!</template>
           <template v-else-if="gs.announcement === 'cpu_wins'">¡{{ gs.p2.name.toUpperCase() }} GANA!</template>
@@ -74,6 +79,7 @@ const timer = computed(() => Math.max(0, Math.ceil(props.gs.timer)))
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   padding: 30px 40px;
   display: flex;
   justify-content: space-between;
@@ -190,7 +196,7 @@ const timer = computed(() => Math.max(0, Math.ceil(props.gs.timer)))
 
 /* ── ANNOUNCEMENTS ── */
 .announcement-wrap {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
@@ -212,6 +218,32 @@ const timer = computed(() => Math.max(0, Math.ceil(props.gs.timer)))
 .announcement-text.round {
   color: #fbbf24;
   text-shadow: 0 0 30px rgba(251, 191, 36, 0.5), 10px 10px 0 #000;
+}
+
+.announcement-round-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.round-title {
+  font-size: 7rem;
+  letter-spacing: 6px;
+}
+
+.round-sub-countdown {
+  font-size: 9rem;
+  font-weight: 950;
+  color: #fff;
+  text-shadow: 0 0 25px rgba(255,255,255,0.6), 8px 8px 0 #000;
+  animation: countdownPulse 0.5s ease-out infinite alternate;
+  font-family: monospace;
+}
+
+@keyframes countdownPulse {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1.1); }
 }
 
 .announcement-text.fight {
