@@ -143,6 +143,19 @@ export function update(gs,dt,keys,onDie,onScore){
   p.frameT+=dt
   if(p.onGround&&p.frameT>0.1){p.frame=(p.frame+1)%2;p.frameT=0}
 
+  // Generar partículas de polvo cuando corre en el suelo (Game juice)
+  if (p.onGround && Math.random() < 0.32) {
+    gs.particles.push({
+      x: p.x + 8 + Math.random() * 12,
+      y: GROUND_Y - 4,
+      vx: -gs.worldSpd * 0.4 - Math.random() * 40,
+      vy: -15 - Math.random() * 30,
+      life: 0.35 + Math.random() * 0.25,
+      color: 'rgba(241, 245, 249, 0.45)',
+      r: 2 + Math.random() * 3
+    })
+  }
+
   gs.spawnT+=dt
   const si=Math.max(0.9,2.6-gs.elapsed*0.025)
   if(gs.spawnT>=si){spawnObs(gs);gs.spawnT=0}
@@ -264,7 +277,7 @@ export function render(ctx,gs,score,lives,best){
   }
   ctx.globalAlpha=1
 
-  drawHUD(ctx,gs,score,lives,best)
+  // drawHUD(ctx,gs,score,lives,best) - Removido del canvas para usar HUD HTML Premium
 }
 
 // ── OBSTACLES ─────────────────────────────────────────────────────────────
