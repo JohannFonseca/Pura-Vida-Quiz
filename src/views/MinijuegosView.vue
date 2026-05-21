@@ -38,19 +38,6 @@ const minijuegos = ref([
     emoji: '🥊',
     modo: 'VS CPU',
     controles: 'Teclado / Táctil',
-  },
-  {
-    id: 'pesca',
-    nombre: 'Pesca Tica Pro',
-    descripcion: 'Una experiencia cinematográfica de pesca. ¿Podrás capturar al legendario Dorado de Puntarenas?',
-    imagen: '/imagenes/pesca_bg.png',
-    ruta: '/minijuegos/pesca',
-    tag: 'Simulador',
-    tagColor: '#0ea5e9',
-    accentColor: '#0284c7',
-    emoji: '🎣',
-    modo: 'Progreso',
-    controles: 'Táctil / Click',
   }
 ]);
 </script>

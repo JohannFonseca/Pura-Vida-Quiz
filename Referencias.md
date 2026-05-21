@@ -18,7 +18,7 @@ El núcleo de la aplicación está construido con un stack moderno de SPA (Singl
 
 ## 2. Motores de Videojuegos (HTML5 Canvas y Física)
 
-Para los minijuegos en tiempo real (Pelea en el Redondel, Runner y Pesca FPV), se optó por renderizado nativo en un elemento `<canvas>` en lugar de manipular elementos del DOM. Esto reduce drásticamente las operaciones de reflujo (*reflow*) en el navegador, permitiendo alcanzar **60 FPS** estables.
+Para los minijuegos en tiempo real (Pelea en el Redondel y Runner), se optó por renderizado nativo en un elemento `<canvas>` en lugar de manipular elementos del DOM. Esto reduce drásticamente las operaciones de reflujo (*reflow*) en el navegador, permitiendo alcanzar **60 FPS** estables.
 
 *   [Bucle de Juego (Game Loop) y Delta Time](https://developer.mozilla.org/es/docs/Web/API/window/requestAnimationFrame): Explicación técnica sobre cómo usar `requestAnimationFrame(loop)` para sincronizar los frames con la tasa de refresco del monitor.
     *   **Método Fuerte:** Se utiliza el cálculo de *Delta Time* (diferencia de tiempo entre frames en milisegundos) multiplicando las físicas y velocidades por `dt`. Esto previene que el juego corra más rápido o lento en pantallas de 144Hz en comparación con las de 60Hz.
@@ -66,29 +66,25 @@ Para evitar descargar múltiples megabytes de archivos de sonido `.mp3` o `.wav`
         *   `obtenerRanking()`: Consulta asíncrona estructurada con `.from('ranking').select('*').order('puntuacion', { ascending: false }).limit(10)` para armar el top 10 mundial de jugadores de forma instantánea.
         *   `guardarPuntuacion()`: Operación asíncrona de tipo `.insert()` que registra de forma atómica el puntaje del jugador, la marca temporal (*timestamp* generada por el servidor) y la sala opcional.
 *   [Web Storage API (MDN Web Docs)](https://developer.mozilla.org/es/docs/Web/API/Window/localStorage): Mecanismo de persistencia local del lado del cliente.
-    *   **Método fuerte:** Serialización y deserialización de datos estructurados complejos (como el historial detallado de capturas en el minijuego de pesca) convirtiéndolos a strings mediante `JSON.stringify()` al guardar y a objetos nativos con `JSON.parse()` al recuperar. Esto evita tener que consultar la nube repetidamente para guardar progresos simples (monedas, experiencia, nombre de usuario).
+    *   **Método fuerte:** Serialización y deserialización de datos estructurados complejos convirtiéndolos a strings mediante `JSON.stringify()` al guardar y a objetos nativos con `JSON.parse()` al recuperar. Esto evita tener que consultar la nube repetidamente para guardar progresos simples de juego (puntuaciones máximas, nombre de usuario, etc.).
 
 ---
 
 ## 6. UI/UX Avanzado y Patrones de Interfaz
 
-*   [Vue Teleport (Documentación)](https://vuejs.org/guide/built-ins/teleport.html): Componente integrado que permite "transportar" partes del HTML de un componente a un nodo DOM fuera de la jerarquía de Vue (por ejemplo, inyectar el simulador de pesca directamente en el `<body>`).
+*   [Vue Teleport (Documentación)](https://vuejs.org/guide/built-ins/teleport.html): Componente integrado que permite "transportar" partes del HTML de un componente a un nodo DOM fuera de la jerarquía de Vue (por ejemplo, inyectar componentes o pantallas directamente en el `<body>`).
     *   **Importancia:** Vital para lograr un efecto real de pantalla completa y superposición absoluta (Z-Index absoluto) que no sea bloqueado por márgenes, contenedores limitados del Navbar, o layouts padres de la SPA.
 *   **Efecto de Glassmorphism (Vidrio Esmerilado) en CSS Moderno:**
     *   Logrado mediante propiedades avanzadas de CSS como `backdrop-filter: blur(20px)` y `background: rgba(10, 22, 40, 0.7)`, ofreciendo una interfaz de usuario premium, semi-translúcida y futurista inspirada en los sistemas operativos modernos de Apple y Windows.
-*   **Anillos de Progreso SVG Dinámicos (SVG Ring Arc Scaling):**
-    *   En `PescaProFPVView.vue`, el indicador de fatiga del pez se calcula mediante una circunferencia matemática SVG dibujada con `strokeDasharray: 848` y modificando su `strokeDashoffset` en base al porcentaje de salud remanente, permitiendo que la barra curva se adapte al contorno circular con suavidad por hardware gráfico.
 
 ---
 
-## 7. Fuentes de Información Cultural, Geográfica e Ictiológica (Costa Rica)
+## 7. Fuentes de Información Cultural y Geográfica (Costa Rica)
 
 Dado que **Pura Vida Quiz** es un videojuego educativo y cultural riguroso, todos los datos internos fueron recopilados de fuentes costarricenses oficiales:
 
 *   **Geografía, Parques Nacionales y Biodiversidad:**
-    *   [SINAC (Sistema Nacional de Áreas de Conservación)](https://www.sinac.go.cr/): Datos sobre Bahía Ballena, el Golfo de Papagayo, y la biodiversidad icónica costarricense (como el Volcán Arenal, la Guaria Morada -*Guarianthe skinneri*-, la Rana Calzonuda -*Agalychnis callidryas*-, y la Tortuga Baula).
-*   **Información Marítima y Especies de Pesca Deportiva:**
-    *   [INCOPESCA (Instituto Costarricense de Pesca y Acuicultura)](https://www.incopesca.go.cr/): Regulaciones de pesca, datos biológicos y nombres científicos de las especies recreativas del Pacífico costarricense como el Pargo Rojo (*Lutjanus campechanus*), el Pez Vela (*Istiophorus platypterus*), el Mahi-Mahi/Dorado (*Coryphaena hippurus*) y el Atún Aleta Amarilla (*Thunnus albacares*).
+    *   [SINAC (Sistema Nacional de Áreas de Conservación)](https://www.sinac.go.cr/): Datos de biodiversidad icónica costarricense (como el Volcán Arenal, la Guaria Morada -*Guarianthe skinneri*-, la Rana Calzonuda -*Agalychnis callidryas*-, y la Tortuga Baula).
 *   **Jerga Nacional ("Habla como tico"):**
     *   [Academia Costarricense de la Lengua (ACL)](https://www.asociaciondeacademias.es/academias/academia-costarricense-de-la-lengua/): Consultas lingüísticas sobre el Diccionario de Costarriqueñismos para validar etimologías de expresiones locales tales como *"mae"*, *"bretear"*, *"yodo"* (como sinónimo de café chorreado), *"¿al chile?"*, *"¡qué jeta!"*, *"está mamando"*, entre otras.
 
@@ -98,7 +94,7 @@ Dado que **Pura Vida Quiz** es un videojuego educativo y cultural riguroso, todo
 
 *   [Freesound.org (Comunidad Oficial)](https://freesound.org/): Repositorio público de efectos de sonido con licencias Creative Commons (usados de referencia para pulir la síntesis de sonido).
 *   [Pexels](https://www.pexels.com/es-es/): Galería de imágenes libres de derechos de autor de alta resolución (utilizadas para el arte conceptual del juego y mapas).
-*   **Canva Pro:** Plataforma de edición de vectores utilizada para la limpieza, eliminación de fondos mediante inteligencia artificial de recorte fotográfico, y estandarización cromática de los assets visuales de personajes y peces.
+*   **Canva Pro:** Plataforma de edición de vectores utilizada para la limpieza, eliminación de fondos mediante inteligencia artificial de recorte fotográfico, y estandarización cromática de los assets visuales de personajes.
 
 ---
 
