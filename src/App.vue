@@ -81,6 +81,9 @@ const goToHome = () => {
     <footer class="footer">
       <div class="footer-content">
         <p>Creado por Johann Fonseca</p>
+        <p class="footer-credits">
+          <a href="https://www.nextsunrise.dev/es" target="_blank" rel="noopener noreferrer">Del estudio de Next Sunrise</a>
+        </p>
       </div>
     </footer>
   </div>
@@ -213,6 +216,18 @@ const goToHome = () => {
   color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.footer-credits a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-credits a:hover {
+  color: var(--accent-green-dark);
+  text-decoration: underline;
 }
 
 /* RESPONSIVE */
